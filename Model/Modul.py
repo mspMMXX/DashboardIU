@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 
 
 class Modul:
@@ -18,18 +19,28 @@ class Modul:
     def set_status(self, status):
         self.status = status
 
-    def set_start_date(self, start_date):
-        self.start_date = start_date
+    def set_start_date(self):
+        if self.status == "In Bearbeitung":
+            self.start_date = datetime.now()
 
-    def set_end_date(self, end_date):
-        self.end_Date = end_date
+    def set_end_date(self):
+        if self.status == "Abgeschlossen":
+            if self.end_Date is None:
+                self.end_Date = datetime.now()
 
-    def set_deadline(self, deadline):
-        self.deadline = deadline
+    def set_deadline(self):
+        time_for_modul = 4 * 365 / 36
+        if self.start_date:
+            self.deadline = self.start_date + timedelta(days=time_for_modul)
+        else:
+            self.deadline = None
 
     def set_exam_date_create_event(self, exam_date):
         self.exam_date = exam_date
         # Event erzeugen!!!!!!!!!
+
+    def set_grade(self, grade):
+        self.grade = grade
 
     def update_modul(self, status=None, start_date=None, end_date=None, deadline=None, exam_date=None, grade=None):
         self.status = status
