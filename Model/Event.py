@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 
+
 class Event:
 
     def __init__(self, event_title, event_date, is_exam_event=False):

@@ -151,7 +151,7 @@ class DashboardView:
 
         # IU-Kontaktdaten
         self.contact_title = tk.Label(self.right_frame, text="IU Kontaktdaten", font=self.title_font)
-        self.contact_title.grid(row= 9, column=1, sticky="e", pady=15)
+        self.contact_title.grid(row=9, column=1, sticky="e", pady=15)
 
         self.advisory_label = tk.Label(self.right_frame, text="Studienberatung:")
         self.advisroy_lbl = tk.Label(self.right_frame, text=self.controller.iu_information.STUDY_ADVISORY_SERVICE)
@@ -204,7 +204,8 @@ class DashboardView:
             modul_element.frame.pack(pady=10)
 
     def create_new_event(self):
-        self.controller.create_event(self.event_entry.get(), datetime.strptime(self.event_date_entry.get(), "%d.%m.%Y %H:%M"))
+        self.controller.create_event(self.event_entry.get(), datetime.strptime(self.event_date_entry.get(),
+                                                                               "%d.%m.%Y %H:%M"))
         self.create_event_elements()
         self.event_entry.delete(0, tk.END)
         self.event_date_entry.delete(0, tk.END)
