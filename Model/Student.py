@@ -48,7 +48,7 @@ class Student:
         sum_modul = 0
         total_days_needed = 0
 
-        for modul in self.modul_list:
+        for modul in self.modul_list.values():
             if modul.status == "Abgeschlossen":
                 total_days_needed += (modul.end_Date - modul.start_date).days
                 sum_modul += 1

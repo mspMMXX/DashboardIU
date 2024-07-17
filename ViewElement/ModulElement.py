@@ -43,23 +43,23 @@ class ModulElement:
         self.acronym_label = tk.Label(self.left_frame, text=self.student_modul.acronym, bg="#5F6E78", fg="white")
         self.acronym_label.pack()
 
-        self.modul_image = tk.Label(self.left_frame, image=self.image)
+        self.modul_image = tk.Label(self.left_frame, image=self.image, bg="#5F6E78")
         self.modul_image.image = self.image
         self.modul_image.pack()
 
         # Rechter Frame - Modulinformationen
-        self.right_frame = tk.Frame(self.frame, bg="5F6E78")
+        self.right_frame = tk.Frame(self.frame, bg="#5F6E78")
         self.right_frame.pack_propagate(False)
         self.right_frame.pack(side="right", fill="both", expand=True, padx=(5, 0))
         self.right_frame.grid_rowconfigure(0, weight=1)
         self.right_frame.columnconfigure(1, weight=1, minsize=120)
 
         # Titel-Zeile
-        self.title_label = tk.Label(self.right_frame, text=self.student_modul.title)
-        self.title_label.grid(row=0, column=0, columnspace=2, sticky="w")
+        self.title_label = tk.Label(self.right_frame, text=self.student_modul.title, bg="#5F6E78", fg="white")
+        self.title_label.grid(row=0, column=0, columnspan=2, sticky="w")
 
         # Status-Zeile
-        self.status_oval = tk.Canvas(self.right_frame, width=25, height=25, bg="5F6E78", highlightthickness=0)
+        self.status_oval = tk.Canvas(self.right_frame, width=25, height=25, bg="#5F6E78", highlightthickness=0)
         self.status_oval.grid(row=1, column=0, sticky="w")
         fill_status = get_fill_status(self.student_modul.status)
         self.status_oval.create_oval(5, 5, 20, 20, fill=fill_status)
@@ -87,9 +87,9 @@ class ModulElement:
 
         self.start_date_dy_label = tk.Label(self.right_frame, bg="#5F6E78", fg="white")
         if student_modul.start_date:
-            self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%d.%m.%Y"))
+            self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%Y.%m.%d"))
         else:
-            self.start_date_dy_label.config(text="Datum ausstehend", bg="#5F6E78", fg="white")
+            self.start_date_dy_label.config(text="Ausstehend", bg="#5F6E78", fg="white")
         self.start_date_dy_label.grid(row=3, column=1, sticky="w")
 
         # Enddatum-Zeile
@@ -97,10 +97,10 @@ class ModulElement:
         self.end_date_label.grid(row=4, column=0, sticky="w")
 
         self.end_date_dy_label = tk.Label(self.right_frame, bg="#5F6E78", fg="white")
-        if student_modul.end_date:
-            self.end_date_dy_label.config(text=self.student_modul.end_date.strftime("%d.%m.%Y"))
+        if student_modul.end_Date is not None:
+            self.end_date_dy_label.config(text=self.student_modul.end_Date.strftime("%d.%m.%Y"))
         else:
-            self.end_date_label.config(text="Datum ausstehend", bg="#5F6E78", fg="white")
+            self.end_date_dy_label.config(text="Ausstehend", bg="#5F6E78", fg="white")
         self.end_date_dy_label.grid(row=4, column=1, sticky="w")
 
         # Deadline-Zeile
@@ -111,7 +111,7 @@ class ModulElement:
         if student_modul.deadline:
             self.deadline_dy_label.config(text=self.student_modul.deadline.strftime("%d.%m.%Y"))
         else:
-            self.deadline_dy_label.config(text="Datum unbekannt", bg="#5F6E78", fg="white")
+            self.deadline_dy_label.config(text="Unbekannt", bg="#5F6E78", fg="white")
         self.deadline_dy_label.grid(row=5, column=1, sticky="w")
 
         # Prüfungsdatum-Zeile

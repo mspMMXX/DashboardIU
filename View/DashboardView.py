@@ -3,8 +3,9 @@ from ViewElement.ModulElement import ModulElement
 from ViewElement.EventElement import EventElement
 from Model.Student import Student
 from datetime import datetime
-import tkinter as tk
+from Model.Modul import Modul
 from tkinter import font
+import tkinter as tk
 
 
 class DashboardView:
@@ -199,9 +200,12 @@ class DashboardView:
         pass  # Datenbank
 
     def create_module_elements(self):
-        for modul in self.modules:
-            modul_element = ModulElement(self.scrollable_frame, modul)
-            modul_element.frame.pack(pady=10)
+        for modul in self.modules.values():
+            if isinstance(modul, Modul):
+                modul_element = ModulElement(self.scrollable_frame, modul)
+                modul_element.frame.pack(pady=10)
+            else:
+                print(f"Unerwarteter Typ in module_list: {type(modul)}")
 
     def create_new_event(self):
         self.controller.create_event(self.event_entry.get(), datetime.strptime(self.event_date_entry.get(),
