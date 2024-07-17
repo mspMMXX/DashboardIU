@@ -21,6 +21,7 @@ class Student:
         self.event_list = []
         self.modul_list = {}
         self.initialize_moduls()
+        self.calc_graduation_date()
 
     def create_event(self, event_title, event_date):
         event = Event(event_title, event_date)
@@ -65,3 +66,6 @@ class Student:
             self.is_expected_before_graduation = False
         else:
             self.is_expected_before_graduation = False
+
+    def set_planned_avg_grade(self, planned_grade):
+        self.planned_avg_grade = planned_grade

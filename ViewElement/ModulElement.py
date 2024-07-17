@@ -87,7 +87,7 @@ class ModulElement:
 
         self.start_date_dy_label = tk.Label(self.right_frame, bg="#5F6E78", fg="white")
         if student_modul.start_date:
-            self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%Y.%m.%d"))
+            self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%d.%m.%Y"))
         else:
             self.start_date_dy_label.config(text="Datum ausstehend", bg="#5F6E78", fg="white")
         self.start_date_dy_label.grid(row=3, column=1, sticky="w")
@@ -98,7 +98,7 @@ class ModulElement:
 
         self.end_date_dy_label = tk.Label(self.right_frame, bg="#5F6E78", fg="white")
         if student_modul.end_date:
-            self.end_date_dy_label.config(text=self.student_modul.end_date.strftime("%Y.%m.%d"))
+            self.end_date_dy_label.config(text=self.student_modul.end_date.strftime("%d.%m.%Y"))
         else:
             self.end_date_label.config(text="Datum ausstehend", bg="#5F6E78", fg="white")
         self.end_date_dy_label.grid(row=4, column=1, sticky="w")
@@ -109,7 +109,7 @@ class ModulElement:
 
         self.deadline_dy_label = tk.Label(self.right_frame)
         if student_modul.deadline:
-            self.deadline_dy_label.config(text=self.student_modul.deadline.strftime("%Y.%m.%d"))
+            self.deadline_dy_label.config(text=self.student_modul.deadline.strftime("%d.%m.%Y"))
         else:
             self.deadline_dy_label.config(text="Datum unbekannt", bg="#5F6E78", fg="white")
         self.deadline_dy_label.grid(row=5, column=1, sticky="w")
@@ -120,7 +120,7 @@ class ModulElement:
 
         self.exam_date_entry = tk.Entry(self.right_frame)
         if self.student_modul.exam_date:
-            self.exam_date_entry.insert(0, self.student_modul.exam_format.strf("%Y.%m.%d %H:%M"))
+            self.exam_date_entry.insert(0, self.student_modul.exam_format.strf("%d.%m.%Y %H:%M"))
         self.exam_date_entry.bind("<FocusOut>", self.update_modul)
         self.exam_date_entry.grid(row=6, column=1, sticky="w")
 

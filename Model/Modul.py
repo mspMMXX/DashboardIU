@@ -35,17 +35,18 @@ class Modul:
         else:
             self.deadline = None
 
-    def set_exam_date_create_event(self, exam_date):
-        self.exam_date = exam_date
-        # Event erzeugen!!!!!!!!!
-
     def set_grade(self, grade):
         self.grade = grade
 
-    def update_modul(self, status=None, start_date=None, end_date=None, deadline=None, exam_date=None, grade=None):
+    def update_modul(self, student, status="Offen", start_date=None, exam_date=None, grade=None):
         self.status = status
         self.start_date = start_date
-        self.end_Date = end_date
-        self.deadline = deadline
-        self.exam_date = exam_date
         self.grade = grade
+        self.set_exam_date_create_event(student, exam_date)
+
+    def set_exam_date_create_event(self, student, exam_date):
+        self.exam_date = exam_date
+        try:
+            student.create_event(self.title, exam_date)
+        except Exception as e:
+            print(f"Fehler beim setzen des Prüfungstermins und Termin: {e}")
