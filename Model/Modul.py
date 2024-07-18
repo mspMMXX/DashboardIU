@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 class Modul:
 
-    def __init__(self, modul_id, acronym, title, exam_format, image_path):
+    def __init__(self, modul_id, acronym, title, exam_format, image_path, exam_date=None):
         self.modul_id = modul_id
         self.acronym = acronym
         self.title = title
@@ -45,8 +45,20 @@ class Modul:
         self.set_exam_date_create_event(student, exam_date)
 
     def set_exam_date_create_event(self, student, exam_date):
-        self.exam_date = exam_date
+        if isinstance(exam_date, str):
+            try:
+                exam_date_obj = datetime.strptime(exam_date, "%d.%m.%Y %H:%M")
+                self.exam_date = exam_date_obj
+            except ValueError as e:
+                print(f"Fehler beim Umwandeln des Prüfungstermins: {e}")
+                return
+        elif isinstance(exam_date, datetime):
+            self.exam_date = exam_date
+        else:
+            print("exam_date muss ein String oder ein datetime-Objekt sein")
+            return
+
         try:
-            student.create_event(self.title, exam_date)
+            student.create_event(self.title, self.exam_date)
         except Exception as e:
-            print(f"Fehler beim setzen des Prüfungstermins und Termin: {e}")
+            print(f"Fehler beim Setzen des Prüfungstermins und Termins: {e}")

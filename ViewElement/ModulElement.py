@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+from datetime import datetime
+from Controller.Controller import Controller
 import os
 
 
@@ -8,15 +10,18 @@ def get_fill_status(status):
         return "gray"
     elif status == "In Bearbeitung":
         return "orange"
-    else:
+    elif status == "Abgeschlossen":
         return "green"
 
 
 class ModulElement:
 
-    def __init__(self, parent, student_modul):
+    def __init__(self, parent, student, student_modul, dashboard_view):
         self.parent = parent
+        self.student = student
+        self.controller = Controller(self.student)
         self.student_modul = student_modul
+        self.dashboard_view = dashboard_view
 
         # Hauptframe
         self.frame = tk.Frame(parent, width=450, height=220, bg="#5F6E78", padx=10, pady=10)
@@ -61,8 +66,10 @@ class ModulElement:
         # Status-Zeile
         self.status_oval = tk.Canvas(self.right_frame, width=25, height=25, bg="#5F6E78", highlightthickness=0)
         self.status_oval.grid(row=1, column=0, sticky="w")
-        fill_status = get_fill_status(self.student_modul.status)
-        self.status_oval.create_oval(5, 5, 20, 20, fill=fill_status)
+        self.fill_status = get_fill_status(self.student_modul.status)
+        self.status_oval.create_oval(5, 5, 20, 20, fill=self.fill_status)
+        print(f"FillStatus: {self.fill_status}")
+        print(f"Status: {self.student_modul.status}")
         self.status_oval.grid(row=1, column=0, sticky="w")
 
         self.status_var = tk.StringVar()
@@ -87,7 +94,7 @@ class ModulElement:
 
         self.start_date_dy_label = tk.Label(self.right_frame, bg="#5F6E78", fg="white")
         if student_modul.start_date:
-            self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%Y.%m.%d"))
+            self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%d.%m.%Y"))
         else:
             self.start_date_dy_label.config(text="Ausstehend", bg="#5F6E78", fg="white")
         self.start_date_dy_label.grid(row=3, column=1, sticky="w")
@@ -120,8 +127,12 @@ class ModulElement:
 
         self.exam_date_entry = tk.Entry(self.right_frame)
         if self.student_modul.exam_date:
-            self.exam_date_entry.insert(0, self.student_modul.exam_format.strf("%d.%m.%Y %H:%M"))
-        self.exam_date_entry.bind("<FocusOut>", self.update_modul)
+            try:
+                exam_date_obj = datetime.strptime(self.student_modul.exam_date, "%d.%m.%Y %H:%M")
+                self.exam_date_entry.insert(0, exam_date_obj.strftime("%d.%m.%Y %H:%M"))
+            except ValueError as e:
+                print(f"Fehler bei der Umwandlung exam_date: {e}")
+        self.exam_date_entry.bind("<FocusOut>", self.update_exam_date)
         self.exam_date_entry.grid(row=6, column=1, sticky="w")
 
         # Noten-Zeile
@@ -131,7 +142,7 @@ class ModulElement:
         self.grade_entry = tk.Entry(self.right_frame)
         if self.student_modul.grade is not None:
             self.grade_entry.insert(0, str(self.student_modul.grade))
-        self.grade_entry.bind("<FocusOut>", self.update_modul)
+        self.grade_entry.bind("<FocusOut>", self.update_grade_and_avg_grade)
         self.grade_entry.grid(row=7, column=1, sticky="w")
 
     def update_modul(self, event):
@@ -140,28 +151,62 @@ class ModulElement:
         self.student_modul.set_start_date()
         self.student_modul.set_deadline()
 
-        if new_status == "Abgeschlossen":
-            self.student_modul.set_end_date()
-        else:
-            self.student_modul.end_date = None
+        if new_status == "Offen":
+            self.update_status_fill_status()
 
         if new_status == "In Bearbeitung":
+            self.student_modul.set_status("In Bearbeitung")
+            self.update_status_fill_status()
             if self.student_modul.start_date:
-                self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%Y.%m.%d"))
+                self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%d.%m.%Y"))
             else:
-                self.start_date_dy_label.config(text="Datum ausstehend")
+                self.start_date_dy_label.config(text="Ausstehend")
             if self.student_modul.deadline:
-                self.deadline_dy_label.config(text=self.student_modul.deadline.strftime("%Y.%m.%d"))
+                self.deadline_dy_label.config(text=self.student_modul.deadline.strftime("%d.%m.%Y"))
             else:
-                self.deadline_dy_label.config(text="Datum unbekannt")
-            if self.student_modul.end_date:
-                self.end_date_dy_label.config(text=self.student_modul.end_date.strftime("%Y.%m.%d"))
+                self.deadline_dy_label.config(text="Unbekannt")
+            if self.student_modul.end_Date:
+                self.end_date_dy_label.config(text=self.student_modul.end_Date.strftime("%d.%m.%Y"))
 
-        if self.student_modul.end_date:
-            self.end_date_dy_label.config(text=self.student_modul.end_date.strftime("%Y.%m.%d"))
+        if self.student_modul.end_Date:
+            self.end_date_dy_label.config(text=self.student_modul.end_Date.strftime("%d.%m.%Y"))
         else:
-            self.end_date_dy_label.config(text="Datum ausstehend")
+            self.end_date_dy_label.config(text="Ausstehend")
 
         exam_grade = self.grade_entry.get()
         if exam_grade != "":
             self.student_modul.set_grade(float(exam_grade))
+
+        if new_status == "Abgeschlossen":
+            self.student_modul.set_end_date()
+            self.update_status_fill_status()
+            self.end_date_dy_label.config(text=self.student_modul.end_Date.strftime("%d.%m.%Y"))
+
+    def update_exam_date(self, event):
+        exam_date_str = self.exam_date_entry.get()
+        try:
+            if exam_date_str:
+                exam_date_obj = datetime.strptime(exam_date_str, "%d.%m.%Y %H:%M")
+                if self.student_modul.exam_date is None or exam_date_obj != self.student_modul.exam_date:
+                    self.student_modul.set_exam_date_create_event(self.student, exam_date_obj)
+                    self.exam_date_entry.delete(0, tk.END)
+                    self.exam_date_entry.insert(0, exam_date_obj.strftime("%d.%m.%Y %H:%M"))
+            self.dashboard_view.create_event_elements()
+        except ValueError as e:
+            print(f"Fehler bei der Umwandlung exam_date: {e}")
+
+    def update_grade_and_avg_grade(self, event):
+        exam_grade_str = self.grade_entry.get()
+        try:
+            if exam_grade_str:
+                exam_grade_float = float(exam_grade_str)
+                self.student_modul.grade = exam_grade_float
+                self.controller.calc_avg_grade()  # Berechne den neuen Durchschnitt
+                self.dashboard_view.update_avg_grade_label()  # Aktualisiere die Anzeige und Farbe
+        except ValueError:
+            print(f"Ungültiger Notenwert: {exam_grade_str}")
+
+    def update_status_fill_status(self):
+        self.fill_status = get_fill_status(self.student_modul.status)
+        self.status_oval.create_oval(5, 5, 20, 20, fill=self.fill_status)
+        self.status_oval.grid(row=1, column=0, sticky="w")

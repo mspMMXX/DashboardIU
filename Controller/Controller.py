@@ -7,7 +7,7 @@ class Controller:
 
     def __init__(self, student):
         self.student = student
-        self.avg_grade = AvgGrade(self.student.planned_avg_grade)
+        self.avg_grade = AvgGrade()
         self.study_program = StudyProgram()
         self.iu_information = IUInformation()
 
@@ -40,13 +40,23 @@ class Controller:
             print(f"Fehler beim löschen des Events: {e}")
 
     def calc_avg_grade(self):
-        self.avg_grade.calc_avg_grade(self.student.modul_list)
+        self.student.avg_grade.calc_avg_grade(self.student.modul_list)
 
     def calc_avg_is_better_than_planned(self):
-        self.avg_grade.calc_avg_is_better_than_planned()
+        self.student.avg_grade.calc_avg_is_better_than_planned()
 
     def get_avg_is_better_than_planned(self):
-        return self.avg_grade.actual_avg_grade_is_better_than_planned
+        return self.student.avg_grade.actual_avg_grade_is_better_than_planned
 
     def set_planned_avg_grade(self, planned_avg_grade):
-        self.student.set_planned_avg_grade(planned_avg_grade)
+        self.student.avg_grade.planned_avg_grade = planned_avg_grade
+
+    def get_planned_avg_grade(self):
+        return self.student.avg_grade.planned_avg_grade
+
+    def calc_expected_graduation_date(self):
+        self.student.calc_expected_graduation_date()
+
+    def get_expected_graduation_date(self):
+        print(f"Controller: {self.student.expected_graduation_date}")
+        return self.student.expected_graduation_date

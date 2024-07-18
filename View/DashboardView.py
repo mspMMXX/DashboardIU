@@ -90,25 +90,26 @@ class DashboardView:
         # Notendurchschnitt
         self.title_font = font.Font(size=14, weight="bold")
 
-        avg_grade_title = tk.Label(self.right_frame, text="Notendurchschnitt", pady=15, font=self.title_font)
-        avg_grade_title.grid(row=0, column=1, sticky="e")
+        self.avg_grade_title = tk.Label(self.right_frame, text="Notendurchschnitt", pady=15, font=self.title_font)
+        self.avg_grade_title.grid(row=0, column=1, sticky="e")
 
-        planned_grade_label = tk.Label(self.right_frame, text="Geplant:")
+        self.planned_grade_label = tk.Label(self.right_frame, text="Geplant:")
         self.planned_grade_entry = tk.Entry(self.right_frame)
-        actual_avg_grade = self.controller.student.avg_grade.actual_avg_grade
-        planned_avg_grade = self.controller.student.avg_grade.planned_avg_grade
-        formatted_avg_grade = f"{actual_avg_grade:.1f}" if actual_avg_grade is not None else "N/A"
-        print(f"Geladener geplanter Notendurchschnitt: {planned_avg_grade}")
-        print(f"Geladener aktueller Notendurchschnitt: {formatted_avg_grade}")
-        self.planned_grade_entry.insert(0, str(planned_avg_grade))
-        actual_grade_label = tk.Label(self.right_frame, text="Momentan:")
-        self.actual_grade_lbl = tk.Label(self.right_frame, text=formatted_avg_grade)
+        self.actual_avg_grade = self.controller.get_planned_avg_grade()
+        self.planned_avg_grade = self.controller.get_expected_graduation_date()
+        self.formatted_avg_grade = f"{self.actual_avg_grade:.1f}" if self.actual_avg_grade is not None else "N/A"
+        print(f"Geladener geplanter Notendurchschnitt: {self.planned_avg_grade}")
+        print(f"Geladener aktueller Notendurchschnitt: {self.formatted_avg_grade}")
+        self.planned_grade_entry.insert(0, str(self.planned_avg_grade))
+        self.actual_grade_label = tk.Label(self.right_frame, text="Momentan:")
+        self.actual_grade_lbl = tk.Label(self.right_frame, text=self.formatted_avg_grade)
 
-        planned_grade_label.grid(row=1, column=0, sticky="w")
+        self.planned_grade_label.grid(row=1, column=0, sticky="w")
         self.planned_grade_entry.grid(row=1, column=1, sticky="e")
-        actual_grade_label.grid(row=2, column=0, sticky="w")
+        self.actual_grade_label.grid(row=2, column=0, sticky="w")
         self.actual_grade_lbl.grid(row=2, column=1, sticky="e")
 
+        self.update_avg_grade_label()
         self.grade_label_color()
 
         # Studium
@@ -129,7 +130,6 @@ class DashboardView:
         self.start_lbl = tk.Label(self.right_frame, text=self.controller.student.study_start_date.strftime("%d.%m.%Y"))
         self.start_label.grid(row=6, column=0, sticky="w")
         self.start_lbl.grid(row=6, column=1, sticky="e")
-
         self.end_label = tk.Label(self.right_frame, text="Abschluss:")
         graduation_date = self.controller.student.graduation_date
         if graduation_date is not None:
@@ -140,8 +140,10 @@ class DashboardView:
         self.end_label.grid(row=7, column=0, sticky="w")
         self.end_lbl.grid(row=7, column=1, sticky="e")
         self.expected_end_label = tk.Label(self.right_frame, text="Voraussichtlicher Abschluss:")
-        if self.controller.student.expected_graduation_date is not None:
-            self.expected_end_lbl = tk.Label(self.right_frame, text=self.controller.student.expected_graduation_date.
+        self.controller.calc_expected_graduation_date()
+        ex_graduation_date = self.controller.get_expected_graduation_date()
+        if ex_graduation_date is not None:
+            self.expected_end_lbl = tk.Label(self.right_frame, text=ex_graduation_date.
                                              strftime("%d.%m.%Y"))
         else:
             self.expected_end_lbl = tk.Label(self.right_frame, text="Ausstehend")
@@ -170,6 +172,7 @@ class DashboardView:
         self.study_coach_lbl.grid(row=12, column=1, sticky="e")
 
         self.career_service_label = tk.Label(self.right_frame, text="Career Service:")
+
         self.career_service_lbl = tk.Label(self.right_frame, text=self.controller.iu_information.CAREER_SERVICE)
         self.career_service_label.grid(row=13, column=0, sticky="w")
         self.career_service_lbl.grid(row=13, column=1, sticky="e")
@@ -202,8 +205,9 @@ class DashboardView:
     def create_module_elements(self):
         for modul in self.modules.values():
             if isinstance(modul, Modul):
-                modul_element = ModulElement(self.scrollable_frame, modul)
+                modul_element = ModulElement(self.scrollable_frame, self.controller.student, modul, self)
                 modul_element.frame.pack(pady=10)
+                self.update_expected_graduation_date()
             else:
                 print(f"Unerwarteter Typ in module_list: {type(modul)}")
 
@@ -225,14 +229,6 @@ class DashboardView:
         except Exception as e:
             print(f"Fehler beim laden der Termine: {e}")
 
-    def grade_label_color(self):
-        if self.planned_grade_entry.get() != "":
-            self.controller.calc_avg_is_better_than_planned()
-            if self.controller.get_avg_is_better_than_planned():
-                self.actual_grade_lbl.config(fg="green")
-            else:
-                self.actual_grade_lbl.config(fg="red")
-
     def graduate_label_color(self):
         self.controller.student.calc_is_expected_before_graduation()
         if self.controller.student.is_expected_before_graduation:
@@ -241,28 +237,32 @@ class DashboardView:
             self.expected_end_lbl.config(fg="red")
 
     def refresh_button_action(self):
+        if self.planned_grade_entry.get():
+            self.controller.set_planned_avg_grade(float(self.planned_grade_entry.get()))
         self.controller.calc_avg_grade()
         self.update_avg_grade_label()
-        if self.planned_grade_entry.get() != "":
-            self.controller.set_planned_avg_grade(
-                float(self.planned_grade_entry.get()))
-            self.controller.student.avg_grade.calc_avg_is_better_than_planned()
-            self.grade_label_color()
-        self.update_expected_graduation_date()
-        self.graduate_label_color()
+        self.grade_label_color()
+
+    def grade_label_color(self):
+        self.controller.calc_avg_is_better_than_planned()
+        if self.controller.get_avg_is_better_than_planned() is True:
+            self.actual_grade_lbl.config(fg="green")
+        elif self.controller.get_avg_is_better_than_planned() is False:
+            self.actual_grade_lbl.config(fg="red")
 
     def update_avg_grade_label(self):
         actual_avg_grade = self.controller.student.avg_grade.actual_avg_grade
         formatted_avg_grade = f"{actual_avg_grade:.1f}" if actual_avg_grade is not None else "N/A"
         self.actual_grade_lbl.config(text=formatted_avg_grade)
+        self.grade_label_color()
 
     def update_expected_graduation_date(self):
-        expected_date = self.controller.student.calc_expected_graduation_date()
         if self.controller.student.expected_graduation_date is not None:
             self.expected_end_lbl.config(text=self.controller.student.expected_graduation_date.strftime("%d.%m.%Y"))
 
     def run(self):
         self.create_event_elements()
+        self.update_avg_grade_label()
         self.root.mainloop()
 
 

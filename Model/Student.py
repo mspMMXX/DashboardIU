@@ -17,7 +17,7 @@ class Student:
         self.expected_graduation_date = None
         self.is_expected_before_graduation = None
         self.planned_avg_grade = None
-        self.avg_grade = AvgGrade(self.planned_avg_grade)
+        self.avg_grade = AvgGrade()
         self.event_list = []
         self.modul_list = {}
         self.initialize_moduls()
@@ -58,6 +58,7 @@ class Student:
             days = td(days=days_to_finish)
 
             self.expected_graduation_date = self.study_start_date + days
+        print(f"Student ex_graduation_date: {self.expected_graduation_date}")
 
     def calc_is_expected_before_graduation(self):
         if self.expected_graduation_date is not None and (self.graduation_date >= self.expected_graduation_date):
