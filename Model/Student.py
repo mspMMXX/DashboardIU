@@ -7,7 +7,7 @@ from datetime import datetime as dt, timedelta as td
 class Student:
 
     def __init__(self):
-        self.studetn_id = 1
+        self.student_id = 1
         self.first_name = "Max"
         self.last_name = "Mustermann"
         self.number = "23404383"
@@ -22,7 +22,6 @@ class Student:
         self.modul_list = {}
         self.initialize_moduls()
         self.calc_graduation_date()
-        self.calc_expected_graduation_date()
 
     def create_event(self, event_title, event_date):
         event = Event(event_title, event_date)
@@ -34,7 +33,7 @@ class Student:
                 self.event_list.remove(event)
 
     def initialize_moduls(self):
-        if self.modul_list == {}:
+        if not self.modul_list:
             self.modul_list = self.study_program.modul_list
 
     def calc_graduation_date(self):
@@ -45,24 +44,23 @@ class Student:
             print(f"Fehler beim Berechnen des Abschlussdatums: {e}")
             self.graduation_date = None
 
-    def calc_expected_graduation_date(self):
-        sum_modul = 0
-        total_days_needed = 0
+    def set_planned_avg_grade(self, planned_grade):
+        self.planned_avg_grade = planned_grade
 
-        for modul in self.modul_list.values():
-            if modul.status == "Abgeschlossen":
-                if isinstance(modul.start_date, dt) and isinstance(modul.end_Date, dt):
-                    total_days_needed += (modul.end_Date - modul.start_date).days
-                    sum_modul += 1
-                else:
-                    print(f"Invalid dates in module: {modul}")
+    def calc_expected_graduation_date(self):
+        total_days_needed = sum(
+            (modul.end_Date - modul.start_date).days for modul in self.modul_list.values()
+            if modul.status == "Abgeschlossen" and isinstance(modul.start_date, dt) and isinstance(modul.end_Date, dt)
+        )
+        sum_modul = sum(
+            1 for modul in self.modul_list.values()
+            if modul.status == "Abgeschlossen"
+        )
 
         if sum_modul != 0:
             days_to_finish = (total_days_needed / sum_modul) * 36
-            days = td(days=days_to_finish)
-            self.expected_graduation_date = self.study_start_date + days
+            self.expected_graduation_date = self.study_start_date + td(days=days_to_finish)
         else:
-            print("Keine abgeschlossenen Module")
             self.expected_graduation_date = self.graduation_date
 
         print(f"Student ex_graduation_date: {self.expected_graduation_date}")
@@ -74,6 +72,3 @@ class Student:
             self.is_expected_before_graduation = False
         else:
             self.is_expected_before_graduation = False
-
-    def set_planned_avg_grade(self, planned_grade):
-        self.planned_avg_grade = planned_grade

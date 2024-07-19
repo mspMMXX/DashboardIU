@@ -25,30 +25,25 @@ class Controller:
             modul.update_modul(self.student, status, start_date.strftime("%d.%m.%Y %H:%M"),
                                exam_date.strftime("%d.%m.%Y %H:%M"), grade)
         except Exception as e:
-            print(f"Fehler beim updaten des Moduls ({modul_id}): {e}")
+            print(f"Fehler beim Updaten des Moduls ({modul_id}): {e}")
 
     def create_event(self, title, date):
         try:
             self.student.create_event(title, date)
         except Exception as e:
-            print(f"Fehler beim erstellen des Events: {e}")
+            print(f"Fehler beim Erstellen des Events: {e}")
 
     def remove_event(self, event_id):
         try:
             self.student.remove_event(event_id)
         except Exception as e:
-            print(f"Fehler beim löschen des Events: {e}")
+            print(f"Fehler beim Löschen des Events: {e}")
 
     def calc_avg_grade(self):
         self.student.avg_grade.calc_avg_grade(self.student.modul_list)
 
     def calc_avg_is_better_than_planned(self):
-        if self.student.avg_grade.actual_avg_grade is None or self.student.planned_avg_grade is None:
-            self.student.avg_grade.actual_avg_grade_is_better_than_planned = None
-        elif self.student.avg_grade.actual_avg_grade <= self.student.planned_avg_grade:
-            self.student.avg_grade.actual_avg_grade_is_better_than_planned = True
-        else:
-            self.student.avg_grade.actual_avg_grade_is_better_than_planned = False
+        self.student.avg_grade.calc_avg_is_better_than_planned(self.student.planned_avg_grade)
 
     def get_avg_is_better_than_planned(self):
         return self.student.avg_grade.actual_avg_grade_is_better_than_planned
@@ -57,11 +52,10 @@ class Controller:
         self.student.set_planned_avg_grade(planned_avg_grade)
 
     def get_planned_avg_grade(self):
-        return self.student.avg_grade.planned_avg_grade
+        return self.student.planned_avg_grade
 
     def calc_expected_graduation_date(self):
         self.student.calc_expected_graduation_date()
 
     def get_expected_graduation_date(self):
-        print(f"Controller: {self.student.expected_graduation_date}")
         return self.student.expected_graduation_date

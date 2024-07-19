@@ -55,14 +55,13 @@ class DashboardView:
         self.event_title_label.grid(row=0, column=0)
         self.event_entry.grid(row=0, column=1)
 
-        self.event_date_label = tk.Label(self.center_frame, text="Dautm:")
+        self.event_date_label = tk.Label(self.center_frame, text="Datum:")
         self.event_date_entry = tk.Entry(self.center_frame)
         self.event_date_label.grid(row=0, column=2)
         self.event_date_entry.grid(row=0, column=3)
 
         self.add_event_button = tk.Button(self.center_frame, text="Neu", command=self.create_new_event)
         self.add_event_button.grid(row=0, column=4)
-
         self.canvas_c = tk.Canvas(self.center_frame, width=496.6)
         self.scrollbar_c = tk.Scrollbar(self.center_frame, orient="vertical", command=self.canvas_c.yview)
         self.scrollable_frame_c = tk.Frame(self.canvas_c, width=496.6)
@@ -97,9 +96,7 @@ class DashboardView:
         self.planned_grade_entry = tk.Entry(self.right_frame)
         self.actual_avg_grade = self.controller.get_planned_avg_grade()
         self.planned_avg_grade = self.controller.get_planned_avg_grade()
-        self.formatted_avg_grade = f"{self.actual_avg_grade:.1f}" if self.actual_avg_grade is not None else "N/A"
-        print(f"Geladener geplanter Notendurchschnitt: {self.planned_avg_grade}")
-        print(f"Geladener aktueller Notendurchschnitt: {self.formatted_avg_grade}")
+        self.formatted_avg_grade = f"{self.actual_avg_grade: .1f}" if self.actual_avg_grade is not None else "Unbekannt"
         self.planned_grade_entry.insert(0, str(self.planned_avg_grade))
         self.actual_grade_label = tk.Label(self.right_frame, text="Momentan:")
         self.actual_grade_lbl = tk.Label(self.right_frame, text=self.formatted_avg_grade)
@@ -144,8 +141,7 @@ class DashboardView:
         self.controller.calc_expected_graduation_date()
         ex_graduation_date = self.controller.get_expected_graduation_date()
         if ex_graduation_date is not None:
-            self.expected_end_lbl = tk.Label(self.right_frame, text=ex_graduation_date.
-                                             strftime("%d.%m.%Y"))
+            self.expected_end_lbl = tk.Label(self.right_frame, text=ex_graduation_date.strftime("%d.%m.%Y"))
         else:
             self.expected_end_lbl = tk.Label(self.right_frame, text="Ausstehend")
         self.expected_end_label.grid(row=8, column=0, sticky="w")
@@ -227,7 +223,7 @@ class DashboardView:
                 EventElement(self.scrollable_frame_c, event_data, lambda event_id=event_data.event_id: self.controller.
                              remove_event(event_id))
         except Exception as e:
-            print(f"Fehler beim laden der Termine: {e}")
+            print(f"Fehler beim Laden der Termine: {e}")
 
     def graduate_label_color(self):
         self.controller.student.calc_is_expected_before_graduation()
@@ -254,7 +250,6 @@ class DashboardView:
 
     def update_avg_grade_label(self):
         actual_avg_grade = self.controller.student.avg_grade.actual_avg_grade
-        self.grade_label_color()
         formatted_avg_grade = f"{actual_avg_grade:.1f}" if actual_avg_grade is not None else "Unbekannt"
         self.actual_grade_lbl.config(text=formatted_avg_grade)
         self.grade_label_color()
