@@ -181,6 +181,8 @@ class ModulElement:
             self.student_modul.set_end_date()
             self.update_status_fill_status()
             self.end_date_dy_label.config(text=self.student_modul.end_Date.strftime("%d.%m.%Y"))
+            self.controller.calc_expected_graduation_date()
+            self.dashboard_view.update_expected_graduation_date()
 
     def update_exam_date(self, event):
         exam_date_str = self.exam_date_entry.get()

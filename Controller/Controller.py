@@ -43,13 +43,18 @@ class Controller:
         self.student.avg_grade.calc_avg_grade(self.student.modul_list)
 
     def calc_avg_is_better_than_planned(self):
-        self.student.avg_grade.calc_avg_is_better_than_planned()
+        if self.student.avg_grade.actual_avg_grade is None or self.student.planned_avg_grade is None:
+            self.student.avg_grade.actual_avg_grade_is_better_than_planned = None
+        elif self.student.avg_grade.actual_avg_grade <= self.student.planned_avg_grade:
+            self.student.avg_grade.actual_avg_grade_is_better_than_planned = True
+        else:
+            self.student.avg_grade.actual_avg_grade_is_better_than_planned = False
 
     def get_avg_is_better_than_planned(self):
         return self.student.avg_grade.actual_avg_grade_is_better_than_planned
 
     def set_planned_avg_grade(self, planned_avg_grade):
-        self.student.avg_grade.planned_avg_grade = planned_avg_grade
+        self.student.set_planned_avg_grade(planned_avg_grade)
 
     def get_planned_avg_grade(self):
         return self.student.avg_grade.planned_avg_grade

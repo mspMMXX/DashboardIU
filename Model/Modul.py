@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 class Modul:
 
-    def __init__(self, modul_id, acronym, title, exam_format, image_path, exam_date=None):
+    def __init__(self, modul_id, acronym, title, exam_format, image_path):
         self.modul_id = modul_id
         self.acronym = acronym
         self.title = title

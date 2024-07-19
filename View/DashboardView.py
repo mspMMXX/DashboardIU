@@ -96,7 +96,7 @@ class DashboardView:
         self.planned_grade_label = tk.Label(self.right_frame, text="Geplant:")
         self.planned_grade_entry = tk.Entry(self.right_frame)
         self.actual_avg_grade = self.controller.get_planned_avg_grade()
-        self.planned_avg_grade = self.controller.get_expected_graduation_date()
+        self.planned_avg_grade = self.controller.get_planned_avg_grade()
         self.formatted_avg_grade = f"{self.actual_avg_grade:.1f}" if self.actual_avg_grade is not None else "N/A"
         print(f"Geladener geplanter Notendurchschnitt: {self.planned_avg_grade}")
         print(f"Geladener aktueller Notendurchschnitt: {self.formatted_avg_grade}")
@@ -132,6 +132,7 @@ class DashboardView:
         self.start_lbl.grid(row=6, column=1, sticky="e")
         self.end_label = tk.Label(self.right_frame, text="Abschluss:")
         graduation_date = self.controller.student.graduation_date
+        self.controller.calc_expected_graduation_date()
         if graduation_date is not None:
             end_date_text = graduation_date.strftime("%d.%m.%Y")
         else:
@@ -207,7 +208,6 @@ class DashboardView:
             if isinstance(modul, Modul):
                 modul_element = ModulElement(self.scrollable_frame, self.controller.student, modul, self)
                 modul_element.frame.pack(pady=10)
-                self.update_expected_graduation_date()
             else:
                 print(f"Unerwarteter Typ in module_list: {type(modul)}")
 
@@ -249,10 +249,13 @@ class DashboardView:
             self.actual_grade_lbl.config(fg="green")
         elif self.controller.get_avg_is_better_than_planned() is False:
             self.actual_grade_lbl.config(fg="red")
+        else:
+            self.actual_grade_lbl.config(fg="black")
 
     def update_avg_grade_label(self):
         actual_avg_grade = self.controller.student.avg_grade.actual_avg_grade
-        formatted_avg_grade = f"{actual_avg_grade:.1f}" if actual_avg_grade is not None else "N/A"
+        self.grade_label_color()
+        formatted_avg_grade = f"{actual_avg_grade:.1f}" if actual_avg_grade is not None else "Unbekannt"
         self.actual_grade_lbl.config(text=formatted_avg_grade)
         self.grade_label_color()
 

@@ -14,7 +14,7 @@ class Student:
         self.study_program = StudyProgram()
         self.study_start_date = dt(2024, 6, 12)
         self.graduation_date = None
-        self.expected_graduation_date = None
+        self.expected_graduation_date = self.graduation_date
         self.is_expected_before_graduation = None
         self.planned_avg_grade = None
         self.avg_grade = AvgGrade()
@@ -22,6 +22,7 @@ class Student:
         self.modul_list = {}
         self.initialize_moduls()
         self.calc_graduation_date()
+        self.calc_expected_graduation_date()
 
     def create_event(self, event_title, event_date):
         event = Event(event_title, event_date)
@@ -50,14 +51,20 @@ class Student:
 
         for modul in self.modul_list.values():
             if modul.status == "Abgeschlossen":
-                total_days_needed += (modul.end_Date - modul.start_date).days
-                sum_modul += 1
+                if isinstance(modul.start_date, dt) and isinstance(modul.end_Date, dt):
+                    total_days_needed += (modul.end_Date - modul.start_date).days
+                    sum_modul += 1
+                else:
+                    print(f"Invalid dates in module: {modul}")
 
         if sum_modul != 0:
             days_to_finish = (total_days_needed / sum_modul) * 36
             days = td(days=days_to_finish)
-
             self.expected_graduation_date = self.study_start_date + days
+        else:
+            print("Keine abgeschlossenen Module")
+            self.expected_graduation_date = self.graduation_date
+
         print(f"Student ex_graduation_date: {self.expected_graduation_date}")
 
     def calc_is_expected_before_graduation(self):
