@@ -76,7 +76,7 @@ class ModulElement:
         self.status_var.set(self.student_modul.status)
         self.status_dropdown = ttk.Combobox(self.right_frame, textvariable=self.status_var)
         self.status_dropdown["values"] = ("Offen", "In Bearbeitung", "Abgeschlossen")
-        self.status_dropdown.current(0)
+        self.status_dropdown.set(self.student_modul.status)
         self.status_dropdown.bind("<<ComboboxSelected>>", self.update_modul)
         self.status_dropdown.grid(row=1, column=1, sticky="w")
 
@@ -116,7 +116,8 @@ class ModulElement:
 
         self.deadline_dy_label = tk.Label(self.right_frame)
         if student_modul.deadline:
-            self.deadline_dy_label.config(text=self.student_modul.deadline.strftime("%d.%m.%Y"))
+            self.deadline_dy_label.config(text=self.student_modul.deadline.strftime("%d.%m.%Y"), bg="#5F6E78",
+                                          fg="white")
         else:
             self.deadline_dy_label.config(text="Unbekannt", bg="#5F6E78", fg="white")
         self.deadline_dy_label.grid(row=5, column=1, sticky="w")
@@ -128,7 +129,11 @@ class ModulElement:
         self.exam_date_entry = tk.Entry(self.right_frame)
         if self.student_modul.exam_date:
             try:
-                exam_date_obj = datetime.strptime(self.student_modul.exam_date, "%d.%m.%Y %H:%M")
+                exam_date_obj = None
+                if isinstance(self.student_modul.exam_date, datetime):
+                    exam_date_obj = self.student_modul.exam_date
+                elif isinstance(self.student_modul.exam_date, str):
+                    exam_date_obj = datetime.strptime(self.student_modul.exam_date, "%d.%m.%Y %H:%M")
                 self.exam_date_entry.insert(0, exam_date_obj.strftime("%d.%m.%Y %H:%M"))
             except ValueError as e:
                 print(f"Fehler bei der Umwandlung exam_date: {e}")
@@ -150,6 +155,8 @@ class ModulElement:
         self.student_modul.set_status(new_status)
         self.student_modul.set_start_date()
         self.student_modul.set_deadline()
+        self.student_modul.set_end_date()
+        self.controller.save_modul(self.student_modul)
 
         if new_status == "Offen":
             self.update_status_fill_status()
@@ -191,6 +198,7 @@ class ModulElement:
                 exam_date_obj = datetime.strptime(exam_date_str, "%d.%m.%Y %H:%M")
                 if self.student_modul.exam_date is None or exam_date_obj != self.student_modul.exam_date:
                     self.student_modul.set_exam_date_create_event(self.student, exam_date_obj)
+                    self.controller.save_modul(self.student_modul)
                     self.exam_date_entry.delete(0, tk.END)
                     self.exam_date_entry.insert(0, exam_date_obj.strftime("%d.%m.%Y %H:%M"))
             self.dashboard_view.create_event_elements()
@@ -205,6 +213,7 @@ class ModulElement:
                 self.student_modul.grade = exam_grade_float
                 self.controller.calc_avg_grade()  # Berechne den neuen Durchschnitt
                 self.dashboard_view.update_avg_grade_label()  # Aktualisiere die Anzeige und Farbe
+                self.controller.save_modul(self.student_modul)  # Hier sollte 'save_moduls' aufgerufen werden
         except ValueError:
             print(f"Ungültiger Notenwert: {exam_grade_str}")
 

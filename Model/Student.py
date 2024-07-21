@@ -2,6 +2,7 @@ from Model.StudyProgram import StudyProgram
 from Model.AvgGrade import AvgGrade
 from Model.Event import Event
 from datetime import datetime as dt, timedelta as td
+from Controller.Controller import Controller
 
 
 class Student:
@@ -20,6 +21,8 @@ class Student:
         self.avg_grade = AvgGrade()
         self.event_list = []
         self.modul_list = {}
+        self.controller = Controller(self)
+        self.controller.save_student(self)
         self.initialize_moduls()
         self.calc_graduation_date()
 
@@ -33,8 +36,14 @@ class Student:
                 self.event_list.remove(event)
 
     def initialize_moduls(self):
-        if not self.modul_list:
-            self.modul_list = self.study_program.modul_list
+        mod_list = self.study_program.modul_list
+        try:
+            for modul in mod_list.values():
+                self.controller.load_modul(modul)
+                self.controller.save_modul(modul)
+        except Exception as e:
+            print(f"Fehler beim laden der Module: {e}")
+        self.modul_list = mod_list
 
     def calc_graduation_date(self):
         try:

@@ -202,6 +202,7 @@ class DashboardView:
     def create_module_elements(self):
         for modul in self.modules.values():
             if isinstance(modul, Modul):
+                self.controller.load_modul(modul)
                 modul_element = ModulElement(self.scrollable_frame, self.controller.student, modul, self)
                 modul_element.frame.pack(pady=10)
             else:
