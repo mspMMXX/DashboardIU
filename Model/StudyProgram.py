@@ -12,111 +12,75 @@ class StudyProgram:
     def initialize_modul_list(self):
         self.modul_list = {
             1: Modul(1, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            2: Modul(2, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            3: Modul(3, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            4: Modul(4, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            5: Modul(5, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            6: Modul(6, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            7: Modul(7, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            8: Modul(8, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            9: Modul(9, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            10: Modul(10, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            11: Modul(11, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            12: Modul(12, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            13: Modul(13, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            14: Modul(14, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            15: Modul(15, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            16: Modul(16, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            17: Modul(17, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            18: Modul(18, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            19: Modul(19, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            20: Modul(20, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            21: Modul(21, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            22: Modul(22, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            23: Modul(23, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            24: Modul(24, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            25: Modul(25, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            26: Modul(26, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            27: Modul(27, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            28: Modul(28, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            29: Modul(29, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            30: Modul(30, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            31: Modul(31, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            32: Modul(32, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            33: Modul(33, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            34: Modul(34, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            35: Modul(35, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png"),
-            36: Modul(36, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
-                     "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
-                     "Dashboard/Images/Data_Science.png")
+                     "Image/Data_Science.png"),
+            2: Modul(2, "DLBDSIDS01_D", "Angewandter Vertrieb", "Klausur",
+                     "Image/AngewandterVertrieb.png"),
+            3: Modul(3, "DLBDSIDS01_D", "Artificial Inteligence", "Klausur",
+                     "Image/ArtificialInteligence.png"),
+            4: Modul(4, "DLBDSIDS01_D", "Business Controlling", "Fachpräsentation",
+                     "Image/BusinessControlling.png"),
+            5: Modul(5, "DLBDSIDS01_D", "Business Inteligence", "Klausur",
+                     "Image/BusinessInteligence.png"),
+            6: Modul(6, "DLBDSIDS01_D", "Content Management Systeme", "Portfolio",
+                     "Image/ContentManagementSysteme.png"),
+            7: Modul(7, "DLBDSIDS01_D", "Data Engineering.png", "Klausur",
+                     "Image/DataEngineering.png"),
+            8: Modul(8, "DLBDSIDS01_D", "Deep Learning", "Fachpräsentation",
+                     "Image/DeepLearning.png"),
+            9: Modul(9, "DLBDSIDS01_D", "DevOps und Continous Delivery", "Portfolio",
+                     "Image/DevOpsUndContinousDelivery.png"),
+            10: Modul(10, "DLBDSIDS01_D", "Digital Publishing", "Fachpräsentation",
+                      "Image/DigitalPublishing.png"),
+            11: Modul(11, "DLBDSIDS01_D", "E-Learning Projekt", "Klausur",
+                      "Image/E-LearningProjekt.png"),
+            12: Modul(12, "DLBDSIDS01_D", "Einführung in das Gesundheitsmanagement", "Portfolio",
+                      "Image/EinfuehrungInDasGesundheitsmanagement.png"),
+            13: Modul(13, "DLBDSIDS01_D", "Einführung in Datenschutz und IT-Sicherheit", "Klausur",
+                      "Image/EinfuehrungInDatenschutzUndIT-Sicherheit.png"),
+            14: Modul(14, "DLBDSIDS01_D", "Embedded Systems", "Klausur",
+                      "Image/EmbeddedSystems.png"),
+            15: Modul(15, "DLBDSIDS01_D", "Ethik und Nachhaltigkeit in der IT", "Portfolio",
+                      "Image/EthikUndNachhaltigkeitInDerIT.png"),
+            16: Modul(16, "DLBDSIDS01_D", "Eventmanagement", "Fachpräsentation",
+                      "Image/Eventmanagement.png"),
+            17: Modul(17, "DLBDSIDS01_D", "Financial Services Management", "Klausur",
+                      "Image/FinancialServicesManagement.png"),
+            18: Modul(18, "DLBDSIDS01_D", "Grundlagen des Luftverkehrs", "Portfolio",
+                      "Image/GrundlagenDesLuftverkehrs.png"),
+            19: Modul(19, "DLBDSIDS01_D", "Hotelmanagement", "Klausur",
+                      "Image/Hotelmanagement.png"),
+            20: Modul(20, "DLBDSIDS01_D", "IT-Recht.png", "Fachpräsentation",
+                      "Image/IT-Recht.png"),
+            21: Modul(21, "DLBDSIDS01_D", "IT-Service Management", "Klausur",
+                      "Image/IT-ServiceManagement.png"),
+            22: Modul(22, "DLBDSIDS01_D", "IT-Infrastruktur", "Fachpräsentation",
+                      "Image/IT_Infrastruktur.png"),
+            23: Modul(23, "DLBDSIDS01_D", "IT-Architekturmanagement", "Portfolio",
+                      "Image/ItArchitekturmanagement.png"),
+            24: Modul(24, "DLBDSIDS01_D", "Mathematik Analysis", "Klausur",
+                      "Image/MathematikAnalysis.png"),
+            25: Modul(25, "DLBDSIDS01_D", "Mathematik Grundlagen", "Fachpräsentation",
+                      "Image/MathematikGrundlagen.png"),
+            26: Modul(26, "DLBDSIDS01_D", "Mobile Software Engineering", "Klausur",
+                      "Image/MobileSoftwareEngineering.png"),
+            27: Modul(27, "DLBDSIDS01_D", "Projekt Mobile Software Engineering", "Portfolio",
+                      "Image/ProjektMobileSoftwareEngineering.png"),
+            28: Modul(28, "DLBDSIDS01_D", "Qualitätssicherung im Softwareprozess", "Klausur",
+                      "Image/QualitätssicherungImSoftwareprozess.png"),
+            29: Modul(29, "DLBDSIDS01_D", "Seminar Software Engineering", "Portfolio",
+                      "Image/SeminarSoftwareEngineering.png"),
+            30: Modul(30, "DLBDSIDS01_D", "Smart Devices", "Fachpräsentation",
+                      "Image/SmartDevices.png"),
+            31: Modul(31, "DLBDSIDS01_D", "SmartFactory", "Klausur",
+                      "Image/SmartFactory.png"),
+            32: Modul(32, "DLBDSIDS01_D", "Smart Mobillity", "Klausur",
+                      "Image/SmartMobillity.png"),
+            33: Modul(33, "DLBDSIDS01_D", "Spezifikation", "Fachpräsentation",
+                      "Image/Spezifikation.png"),
+            34: Modul(34, "DLBDSIDS01_D", "Statistik", "Portfolio",
+                      "Image/Statistik.png"),
+            35: Modul(35, "DLBDSIDS01_D", "Supply-Chain-Management", "Fachpräsentation",
+                      "Image/Supply-Chain-Management.png"),
+            36: Modul(36, "DLBDSIDS01_D", "Transport, Umschlag und Lagerung", "Klausur",
+                      "Image/TransportUmschlagUndLagerung.png")
         }
