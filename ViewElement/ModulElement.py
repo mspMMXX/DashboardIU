@@ -68,8 +68,6 @@ class ModulElement:
         self.status_oval.grid(row=1, column=0, sticky="w")
         self.fill_status = get_fill_status(self.student_modul.status)
         self.status_oval.create_oval(5, 5, 20, 20, fill=self.fill_status)
-        print(f"FillStatus: {self.fill_status}")
-        print(f"Status: {self.student_modul.status}")
         self.status_oval.grid(row=1, column=0, sticky="w")
 
         self.status_var = tk.StringVar()

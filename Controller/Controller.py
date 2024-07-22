@@ -51,7 +51,7 @@ class Controller:
         self.student.avg_grade.calc_avg_grade(self.student.modul_list)
 
     def calc_avg_is_better_than_planned(self):
-        self.student.avg_grade.calc_avg_is_better_than_planned(self.student.planned_avg_grade)
+        self.student.avg_grade.calc_avg_is_better_than_planned(self.student.avg_grade.planned_avg_grade)
 
     def get_avg_is_better_than_planned(self):
         return self.student.avg_grade.actual_avg_grade_is_better_than_planned
@@ -60,7 +60,7 @@ class Controller:
         self.student.set_planned_avg_grade(planned_avg_grade)
 
     def get_planned_avg_grade(self):
-        return self.student.planned_avg_grade
+        return self.student.avg_grade.planned_avg_grade
 
     def calc_expected_graduation_date(self):
         self.student.calc_expected_graduation_date()
@@ -96,7 +96,6 @@ class Controller:
                       student.expected_graduation_date, student.is_expected_before_graduation)
             self.db.execute_query(query, params)
             student.student_id = self.db.cursor.lastrowid
-            print(f"Neuer Student eingefügt mit student_id: {student.student_id}")
 
     def save_modul(self, modul):
         query = "SELECT id FROM Modul WHERE modul_id = %s AND student_id = %s"
@@ -198,3 +197,37 @@ class Controller:
             self.db.execute_query(query, param)
         except Exception as e:
             print(f"Fehler beim löschen des Events: {e}")
+
+    def save_avg_grade(self, student):
+        query = "SELECT * FROM AvgGrade WHERE student_id = %s"
+        param = (student.student_id,)
+        result = self.db.fetch_one(query, param)
+
+        if result:
+            query = """UPDATE AvgGrade
+            SET planned_avg_grade = %s, actual_avg_grade = %s, actual_avg_grade_is_better_than_planned = %s
+            WHERE student_id = %s"""
+            param = (student.avg_grade.planned_avg_grade, student.avg_grade.actual_avg_grade,
+                     student.avg_grade.actual_avg_grade_is_better_than_planned, student.student_id)
+            self.db.execute_query(query, param)
+        else:
+            query = """INSERT INTO AvgGrade (student_id, planned_avg_grade, actual_avg_grade, 
+            actual_avg_grade_is_better_than_planned)
+            VALUES (%s, %s, %s, %s)"""
+            param = (student.student_id, student.avg_grade.planned_avg_grade, student.avg_grade.actual_avg_grade,
+                     student.avg_grade.actual_avg_grade_is_better_than_planned)
+            self.db.execute_query(query, param)
+
+    def load_avg_grade(self, student):
+        query = "SELECT * FROM AvgGrade WHERE student_id = %s"
+        param = (student.student_id,)
+        result = self.db.fetch_one(query, param)
+
+        if result:
+            student.avg_grade.planned_avg_grade = result["planned_avg_grade"]
+            student.avg_grade.actual_avg_grade = result["actual_avg_grade"]
+            student.avg_grade.actual_avg_grade_is_better_than_planned = (
+                result)["actual_avg_grade_is_better_than_planned"]
+
+    def cleanup(self):
+        self.db.close()

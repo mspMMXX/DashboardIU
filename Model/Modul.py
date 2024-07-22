@@ -16,8 +16,6 @@ class Modul:
         self.grade = None
         self.image_path = image_path
 
-        print(f"Modul erstellt mit modul_id: {self.modul_id}")
-
     def set_status(self, status):
         self.status = status
 
@@ -57,7 +55,6 @@ class Modul:
         elif isinstance(exam_date, datetime):
             self.exam_date = exam_date
         else:
-            print("exam_date muss ein String oder ein datetime-Objekt sein")
             return
 
         try:

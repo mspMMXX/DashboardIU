@@ -89,6 +89,7 @@ class DashboardView:
         # Notendurchschnitt
         self.title_font = font.Font(size=14, weight="bold")
 
+        self.controller.load_avg_grade(self.controller.student)
         self.avg_grade_title = tk.Label(self.right_frame, text="Notendurchschnitt", pady=15, font=self.title_font)
         self.avg_grade_title.grid(row=0, column=1, sticky="e")
 
@@ -197,7 +198,8 @@ class DashboardView:
         self.refresh_button.grid(row=18, column=1, sticky="e", pady=15)
 
     def on_closing(self):
-        pass  # Datenbank
+        self.controller.cleanup()
+        self.root.destroy()
 
     def create_module_elements(self):
         for modul in self.modules.values():
@@ -240,10 +242,10 @@ class DashboardView:
             self.expected_end_lbl.config(fg="red")
 
     def refresh_button_action(self):
-        if self.planned_grade_entry.get():
-            self.controller.set_planned_avg_grade(float(self.planned_grade_entry.get()))
+        self.controller.set_planned_avg_grade(float(self.planned_grade_entry.get()))
         self.controller.calc_avg_grade()
         self.update_avg_grade_label()
+        self.controller.save_avg_grade(self.controller.student)
         self.grade_label_color()
 
     def grade_label_color(self):

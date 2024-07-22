@@ -51,11 +51,12 @@ class Student:
             new_year = self.study_start_date.year + self.study_program.study_duration
             self.graduation_date = self.study_start_date.replace(year=new_year)
         except ValueError as e:
-            print(f"Fehler beim Berechnen des Abschlussdatums: {e}")
+            print(f"Fehler beim berechnen des Abschlussdatums: {e}")
             self.graduation_date = None
 
     def set_planned_avg_grade(self, planned_grade):
         self.planned_avg_grade = planned_grade
+        self.avg_grade.planned_avg_grade = planned_grade
 
     def calc_expected_graduation_date(self):
         total_days_needed = sum(
@@ -72,8 +73,6 @@ class Student:
             self.expected_graduation_date = self.study_start_date + td(days=days_to_finish)
         else:
             self.expected_graduation_date = self.graduation_date
-
-        print(f"Student ex_graduation_date: {self.expected_graduation_date}")
 
     def calc_is_expected_before_graduation(self):
         if self.expected_graduation_date is not None and (self.graduation_date >= self.expected_graduation_date):
