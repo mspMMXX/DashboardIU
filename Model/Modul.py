@@ -16,6 +16,8 @@ class Modul:
         self.grade = None
         self.image_path = image_path
 
+        print(f"Modul erstellt mit modul_id: {self.modul_id}")
+
     def set_status(self, status):
         self.status = status
 

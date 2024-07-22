@@ -209,20 +209,26 @@ class DashboardView:
                 print(f"Unerwarteter Typ in module_list: {type(modul)}")
 
     def create_new_event(self):
-        self.controller.create_event(self.event_entry.get(), datetime.strptime(self.event_date_entry.get(),
-                                                                               "%d.%m.%Y %H:%M"))
-        self.create_event_elements()
-        self.event_entry.delete(0, tk.END)
-        self.event_date_entry.delete(0, tk.END)
+        event_title = self.event_entry.get()
+        event_date_str = self.event_date_entry.get()
+        try:
+            event_date = datetime.strptime(event_date_str, "%d.%m.%Y %H:%M")
+            self.controller.create_event(event_title, event_date)
+            self.create_event_elements()  # Aktualisieren der GUI-Elemente
+            self.event_entry.delete(0, tk.END)
+            self.event_date_entry.delete(0, tk.END)
+        except ValueError as e:
+            print(f"Fehler beim Erstellen des Events: {e}")
 
     def create_event_elements(self):
         for view in self.scrollable_frame_c.winfo_children():
             view.destroy()
         try:
             events = self.controller.get_events()
-            for event_data in events:
-                EventElement(self.scrollable_frame_c, event_data, lambda event_id=event_data.event_id: self.controller.
-                             remove_event(event_id))
+            if events is not None:
+                for event in events:
+                    EventElement(self.scrollable_frame_c, event,
+                                 lambda event_id=event.event_id: self.controller.remove_event(event_id))
         except Exception as e:
             print(f"Fehler beim Laden der Termine: {e}")
 

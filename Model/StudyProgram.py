@@ -119,7 +119,7 @@ class StudyProgram:
             35: Modul(35, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
                      "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
                      "Dashboard/Images/Data_Science.png"),
-            36: Modul(1, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
+            36: Modul(36, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
                      "/Users/msp/Dropbox/07_IU/11_Objektorientierte_Programmierung_Python/02_Portfolio/01_Code/"
                      "Dashboard/Images/Data_Science.png")
         }

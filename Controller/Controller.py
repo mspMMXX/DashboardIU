@@ -2,6 +2,7 @@ from Model.AvgGrade import AvgGrade
 from Model.StudyProgram import StudyProgram
 from Model.IuInformation import IUInformation
 from Data.DataBase import DataBase
+from Model.Event import Event
 
 
 class Controller:
@@ -14,6 +15,9 @@ class Controller:
         self.db = DataBase("localhost", "root", "", "iu_dashboard")
 
     def get_events(self):
+        events = self.load_events()
+        if events is not None:
+            self.student.event_list = events
         return self.student.event_list
 
     def get_student_moduls(self):
@@ -39,6 +43,7 @@ class Controller:
     def remove_event(self, event_id):
         try:
             self.student.remove_event(event_id)
+            self.delete_event(event_id)
         except Exception as e:
             print(f"Fehler beim Löschen des Events: {e}")
 
@@ -94,36 +99,24 @@ class Controller:
             print(f"Neuer Student eingefügt mit student_id: {student.student_id}")
 
     def save_modul(self, modul):
-        print(f"Speichern des Moduls für Student-ID: {self.student.student_id}")
-
-        # Überprüfen, ob der Student existiert
-        query = "SELECT student_id FROM Student WHERE student_id = %s"
-        param = (self.student.student_id,)
-        student_exists = self.db.fetch_one(query, param)
-        print(f"Überprüfung des Studenten mit ID {self.student.student_id}: {student_exists}")
-
-        if not student_exists:
-            raise ValueError(f"Student with ID {self.student.student_id} does not exist in the Student table.")
-
-        # Überprüfen, ob das Modul existiert
         query = "SELECT id FROM Modul WHERE modul_id = %s AND student_id = %s"
         param = (modul.modul_id, self.student.student_id)
         result = self.db.fetch_one(query, param)
-        print(
-            f"Überprüfung des Moduls mit modul_id {modul.modul_id} und student_id {self.student.student_id}: {result}")
 
         if result:
-            modul.modul_id = result["id"]
+            modul_id = result["id"]
             query = """UPDATE Modul 
             SET acronym = %s, title = %s, exam_format = %s, image_path = %s, status = %s, 
             start_date = %s, end_date = %s, deadline = %s, exam_date = %s, grade = %s, student_id = %s
             WHERE id = %s"""
             param = (modul.acronym, modul.title, modul.exam_format, modul.image_path, modul.status, modul.start_date,
                      modul.end_Date, modul.deadline, modul.exam_date, modul.grade, self.student.student_id,
-                     modul.modul_id)
+                     modul_id)
 
-            self.db.execute_query(query, param)
-            print(f"Modul upgedatet {modul}")
+            try:
+                self.db.execute_query(query, param)
+            except Exception as e:
+                print(f"Fehler beim Updaten des Moduls: {e}")
         else:
             query = """INSERT INTO Modul (modul_id, acronym, title, exam_format, image_path, status, start_date, 
             end_date, deadline, exam_date, grade, student_id)
@@ -131,13 +124,16 @@ class Controller:
             param = (modul.modul_id, modul.acronym, modul.title, modul.exam_format, modul.image_path, modul.status,
                      modul.start_date, modul.end_Date, modul.deadline, modul.exam_date, modul.grade,
                      self.student.student_id)
-            self.db.execute_query(query, param)
-            modul.modul_id = self.db.cursor.lastrowid
+
+            try:
+                self.db.execute_query(query, param)
+            except Exception as e:
+                print(f"Fehler beim Erstellen des Moduls: {e}")
 
     def load_modul(self, modul):
         print("Laden der Module")
-        query = "SELECT * FROM Modul WHERE id = %s"
-        param = (modul.modul_id,)
+        query = "SELECT * FROM Modul WHERE modul_id = %s AND student_id = %s"
+        param = (modul.modul_id, self.student.student_id)
         result = self.db.fetch_one(query, param)
 
         if result:
@@ -151,3 +147,54 @@ class Controller:
             modul.deadline = result["deadline"]
             modul.exam_date = result["exam_date"]
             modul.grade = result["grade"]
+            modul.modul_id = result["modul_id"]
+            print(f"Modul geladen: {modul}")
+
+    def save_event(self, event):
+        query = "SELECT event_id FROM Events WHERE event_id = %s AND student_id = %s"
+        param = (event.event_id, self.student.student_id)
+        result = self.db.fetch_one(query, param)
+
+        if not result:
+            query = """INSERT INTO Events (event_id, title, event_date, is_exam_event, student_id)
+            VALUES (%s, %s, %s, %s, %s)"""
+            param = (event.event_id, event.event_title, event.event_date, event.is_exam_event, self.student.student_id)
+
+            try:
+                self.db.execute_query(query, param)
+            except Exception as e:
+                print(f"Fehler beim speichern des Events: {e}")
+
+    def load_events(self):
+        query = "SELECT * FROM Events WHERE student_id = %s"
+        param = (self.student.student_id,)
+        results = self.db.fetch_all(query, param)
+
+        event_list = []
+
+        if results:
+            for event in results:
+                event_id = event["event_id"]
+                event_title = event["title"]
+                event_date = event["event_date"]
+                is_exam_event = event["is_exam_event"]
+
+                event = Event(event_title, event_date, is_exam_event)
+                event.event_id = event_id
+                event_list.append(event)
+            return event_list
+        else:
+            return None
+
+    def delete_event(self, event_id):
+        query = "SELECT id FROM Events WHERE event_id = %s AND student_id = %s"
+        param = (event_id, self.student.student_id)
+        result = self.db.fetch_one(query, param)
+        result_id = result["id"]
+
+        query = "DELETE FROM Events WHERE id = %s"
+        param = (result_id,)
+        try:
+            self.db.execute_query(query, param)
+        except Exception as e:
+            print(f"Fehler beim löschen des Events: {e}")

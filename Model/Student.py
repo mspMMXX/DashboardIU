@@ -29,6 +29,7 @@ class Student:
     def create_event(self, event_title, event_date):
         event = Event(event_title, event_date)
         self.event_list.append(event)
+        self.controller.save_event(event)
 
     def remove_event(self, event_id):
         for event in self.event_list:
