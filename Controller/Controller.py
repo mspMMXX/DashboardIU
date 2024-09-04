@@ -12,7 +12,7 @@ class Controller:
         self.avg_grade = AvgGrade()
         self.study_program = StudyProgram()
         self.iu_information = IUInformation()
-        self.db = DataBase("localhost", "root", "", "iu_dashboard")
+        self.db = DataBase("127.0.0.1", "root", "root", "dashboard", "utf8mb4", "utf8mb4_general_ci")
 
     def get_events(self):
         events = self.load_events()

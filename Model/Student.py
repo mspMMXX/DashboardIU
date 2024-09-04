@@ -69,7 +69,7 @@ class Student:
         )
 
         if sum_modul != 0:
-            days_to_finish = (total_days_needed / sum_modul) * 36
+            days_to_finish = (total_days_needed / sum_modul) * len(self.modul_list)
             self.expected_graduation_date = self.study_start_date + td(days=days_to_finish)
         else:
             self.expected_graduation_date = self.graduation_date

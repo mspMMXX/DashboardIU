@@ -3,12 +3,14 @@ import mysql.connector
 
 class DataBase:
 
-    def __init__(self, host, user, password, database):
+    def __init__(self, host, user, password, database, charset, collation):
         self.connection = mysql.connector.connect(
             host=host,
             user=user,
             password=password,
-            database=database
+            database=database,
+            charset=charset,
+            collation=collation
         )
         self.cursor = self.connection.cursor(
             dictionary=True)
