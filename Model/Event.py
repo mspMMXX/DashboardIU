@@ -13,3 +13,5 @@ class Event:
         else:
             raise ValueError("event_date must be a datetime object")
         self.is_exam_event = is_exam_event
+
+

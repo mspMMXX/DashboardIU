@@ -1,9 +1,14 @@
 class AvgGrade:
 
     def __init__(self):
-        self.planned_avg_grade = None
         self.actual_avg_grade = None
         self.actual_avg_grade_is_better_than_planned = None
+
+    def get_actual_avg_is_better_than_planned(self):
+        if self.actual_avg_grade_is_better_than_planned is None:
+            return False
+        else:
+            return self.actual_avg_grade_is_better_than_planned
 
     def calc_avg_grade(self, student_moduls):
         sum_grade = 0.0

@@ -1,8 +1,8 @@
 from Model.StudyProgram import StudyProgram
 from Model.AvgGrade import AvgGrade
 from Model.Event import Event
+from Data.DataBase import DataBase
 from datetime import datetime as dt, timedelta as td
-from Controller.Controller import Controller
 
 
 class Student:
@@ -19,29 +19,62 @@ class Student:
         self.is_expected_before_graduation = None
         self.planned_avg_grade = None
         self.avg_grade = AvgGrade()
-        self.event_list = []
         self.modul_list = {}
-        self.controller = Controller(self)
-        self.controller.save_student(self)
+        self.db = DataBase()
+        print("Lade Events für den Studenten")
+        self.event_list = self.db.get_events(self)
+        print(f"Anzahl der Events nach Abruf: {len(self.event_list)}")
+        self.db.save_student(self)
         self.initialize_moduls()
         self.calc_graduation_date()
 
+    def get_number(self):
+        return self.number
+
+    def get_first_name(self):
+        return self.first_name
+
+    def get_last_name(self):
+        return self.last_name
+
+    def get_expected_graduation_date(self):
+        return self.expected_graduation_date
+
+    def get_graduation_date(self):
+        return self.graduation_date
+
+    def get_study_start_date_str(self):
+        return self.study_start_date.strftime("%d.%m.%Y")
+
+    def get_planned_avg_grade(self):
+        return self.planned_avg_grade
+
+    def get_student_modul_list(self):
+        return self.modul_list
+
     def create_event(self, event_title, event_date):
-        event = Event(event_title, event_date)
-        self.event_list.append(event)
-        self.controller.save_event(event)
+        try:
+            event = Event(event_title, event_date)
+            self.db.save_event(event, self)
+            self.event_list = self.db.get_events(self)
+            print(f"Event-Liste nach dem Erstellen: {self.event_list}")
+        except Exception as e:
+            print(f"Fehler beim erstellen des Events: {e}")
 
     def remove_event(self, event_id):
-        for event in self.event_list:
-            if event_id == event.event_id:
-                self.event_list.remove(event)
+        try:
+            self.db.delete_event(event_id, self)
+            self.event_list = self.db.get_events(self)
+            print(f"Event-Liste nach dem Löschen: {self.event_list}")
+        except Exception as e:
+            print(f"Fehler beim Löschen des Events: {e}")
 
     def initialize_moduls(self):
         mod_list = self.study_program.modul_list
         try:
             for modul in mod_list.values():
-                self.controller.load_modul(modul)
-                self.controller.save_modul(modul)
+                self.db.load_modul(modul, self)
+                self.db.save_modul(modul, self)
         except Exception as e:
             print(f"Fehler beim laden der Module: {e}")
         self.modul_list = mod_list
@@ -53,6 +86,9 @@ class Student:
         except ValueError as e:
             print(f"Fehler beim berechnen des Abschlussdatums: {e}")
             self.graduation_date = None
+
+    def calc_avg_grade(self):
+        self.avg_grade.calc_avg_grade(self.modul_list)
 
     def set_planned_avg_grade(self, planned_grade):
         self.planned_avg_grade = planned_grade

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
-from Controller.Controller import Controller
+from Data.DataBase import DataBase
 import os
 
 
@@ -19,7 +19,7 @@ class ModulElement:
     def __init__(self, parent, student, student_modul, dashboard_view):
         self.parent = parent
         self.student = student
-        self.controller = Controller(self.student)
+        self.db = DataBase()
         self.student_modul = student_modul
         self.dashboard_view = dashboard_view
 
@@ -154,7 +154,7 @@ class ModulElement:
         self.student_modul.set_start_date()
         self.student_modul.set_deadline()
         self.student_modul.set_end_date()
-        self.controller.save_modul(self.student_modul)
+        self.db.save_modul(self.student_modul, self.student)
 
         if new_status == "Offen":
             self.update_status_fill_status()
@@ -186,7 +186,7 @@ class ModulElement:
             self.student_modul.set_end_date()
             self.update_status_fill_status()
             self.end_date_dy_label.config(text=self.student_modul.end_Date.strftime("%d.%m.%Y"))
-            self.controller.calc_expected_graduation_date()
+            self.student.calc_expected_graduation_date()
             self.dashboard_view.update_expected_graduation_date()
 
     def update_exam_date(self, event):
@@ -196,7 +196,7 @@ class ModulElement:
                 exam_date_obj = datetime.strptime(exam_date_str, "%d.%m.%Y %H:%M")
                 if self.student_modul.exam_date is None or exam_date_obj != self.student_modul.exam_date:
                     self.student_modul.set_exam_date_create_event(self.student, exam_date_obj)
-                    self.controller.save_modul(self.student_modul)
+                    self.db.save_modul(self.student_modul, self.student)
                     self.exam_date_entry.delete(0, tk.END)
                     self.exam_date_entry.insert(0, exam_date_obj.strftime("%d.%m.%Y %H:%M"))
             self.dashboard_view.create_event_elements()
@@ -209,9 +209,9 @@ class ModulElement:
             if exam_grade_str:
                 exam_grade_float = float(exam_grade_str)
                 self.student_modul.grade = exam_grade_float
-                self.controller.calc_avg_grade()  # Berechne den neuen Durchschnitt
-                self.dashboard_view.update_avg_grade_label()  # Aktualisiere die Anzeige und Farbe
-                self.controller.save_modul(self.student_modul)  # Hier sollte 'save_moduls' aufgerufen werden
+                self.student.calc_avg_grade()
+                self.dashboard_view.update_avg_grade_label()
+                self.db.save_modul(self.student_modul, self.student)
         except ValueError:
             print(f"Ungültiger Notenwert: {exam_grade_str}")
 

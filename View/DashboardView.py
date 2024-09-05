@@ -1,9 +1,14 @@
-from Controller.Controller import Controller
+import time
+
 from ViewElement.ModulElement import ModulElement
 from ViewElement.EventElement import EventElement
 from Model.Student import Student
+from Model.StudyProgram import StudyProgram
+from Model.IuInformation import IUInformation
+from Data.DataBase import DataBase
 from datetime import datetime
 from Model.Modul import Modul
+from functools import partial
 from tkinter import font
 import tkinter as tk
 
@@ -12,7 +17,9 @@ class DashboardView:
 
     def __init__(self):
         self.student = Student()
-        self.controller = Controller(self.student)
+        self.db = DataBase()
+        self.study_program = StudyProgram()
+        self.iu_information = IUInformation()
         self.root = tk.Tk()
         self.root.title("IU Dashboard")
         self.root.geometry("1500x800")
@@ -45,7 +52,7 @@ class DashboardView:
         self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-        self.modules = self.controller.get_student_moduls()
+        self.modules = self.student.get_student_modul_list()
         self.module_index = 0
         self.create_module_elements()
 
@@ -89,14 +96,14 @@ class DashboardView:
         # Notendurchschnitt
         self.title_font = font.Font(size=14, weight="bold")
 
-        self.controller.load_avg_grade(self.controller.student)
+        self.db.load_avg_grade(self.student)
         self.avg_grade_title = tk.Label(self.right_frame, text="Notendurchschnitt", pady=15, font=self.title_font)
         self.avg_grade_title.grid(row=0, column=1, sticky="e")
 
         self.planned_grade_label = tk.Label(self.right_frame, text="Geplant:")
         self.planned_grade_entry = tk.Entry(self.right_frame)
-        self.actual_avg_grade = self.controller.get_planned_avg_grade()
-        self.planned_avg_grade = self.controller.get_planned_avg_grade()
+        self.actual_avg_grade = self.student.get_planned_avg_grade()
+        self.planned_avg_grade = self.student.get_planned_avg_grade()
         self.formatted_avg_grade = f"{self.actual_avg_grade: .1f}" if self.actual_avg_grade is not None else "Unbekannt"
         self.planned_grade_entry.insert(0, str(self.planned_avg_grade))
         self.actual_grade_label = tk.Label(self.right_frame, text="Momentan:")
@@ -115,22 +122,22 @@ class DashboardView:
         self.study_label.grid(row=3, column=1, sticky="e")
 
         self.study_name_label = tk.Label(self.right_frame, text="Studiengang:")
-        self.study_name_lbl = tk.Label(self.right_frame, text=self.controller.study_program.course_of_study)
+        self.study_name_lbl = tk.Label(self.right_frame, text=self.study_program.course_of_study)
         self.study_name_label.grid(row=4, column=0, sticky="w")
         self.study_name_lbl.grid(row=4, column=1, sticky="e")
 
         self.study_duration_label = tk.Label(self.right_frame, text="Studiendauer")
-        self.study_duration_lbl = tk.Label(self.right_frame, text=self.controller.study_program.study_duration)
+        self.study_duration_lbl = tk.Label(self.right_frame, text=self.study_program.study_duration)
         self.study_duration_label.grid(row=5, column=0, sticky="w")
         self.study_duration_lbl.grid(row=5, column=1, sticky="e")
 
         self.start_label = tk.Label(self.right_frame, text="Studienbeginn:")
-        self.start_lbl = tk.Label(self.right_frame, text=self.controller.student.study_start_date.strftime("%d.%m.%Y"))
+        self.start_lbl = tk.Label(self.right_frame, text=self.student.get_study_start_date_str())
         self.start_label.grid(row=6, column=0, sticky="w")
         self.start_lbl.grid(row=6, column=1, sticky="e")
         self.end_label = tk.Label(self.right_frame, text="Abschluss:")
-        graduation_date = self.controller.student.graduation_date
-        self.controller.calc_expected_graduation_date()
+        graduation_date = self.student.get_graduation_date()
+        self.student.calc_expected_graduation_date()
         if graduation_date is not None:
             end_date_text = graduation_date.strftime("%d.%m.%Y")
         else:
@@ -139,8 +146,8 @@ class DashboardView:
         self.end_label.grid(row=7, column=0, sticky="w")
         self.end_lbl.grid(row=7, column=1, sticky="e")
         self.expected_end_label = tk.Label(self.right_frame, text="Voraussichtlicher Abschluss:")
-        self.controller.calc_expected_graduation_date()
-        ex_graduation_date = self.controller.get_expected_graduation_date()
+        self.student.calc_expected_graduation_date()
+        ex_graduation_date = self.student.get_expected_graduation_date()
         if ex_graduation_date is not None:
             self.expected_end_lbl = tk.Label(self.right_frame, text=ex_graduation_date.strftime("%d.%m.%Y"))
         else:
@@ -155,23 +162,23 @@ class DashboardView:
         self.contact_title.grid(row=9, column=1, sticky="e", pady=15)
 
         self.advisory_label = tk.Label(self.right_frame, text="Studienberatung:")
-        self.advisroy_lbl = tk.Label(self.right_frame, text=self.controller.iu_information.STUDY_ADVISORY_SERVICE)
+        self.advisroy_lbl = tk.Label(self.right_frame, text=self.iu_information.STUDY_ADVISORY_SERVICE)
         self.advisory_label.grid(row=10, column=0, sticky="w")
         self.advisroy_lbl.grid(row=10, column=1, sticky="e")
 
         self.exam_service_lable = tk.Label(self.right_frame, text="Prüfungsservice:")
-        self.exam_service_lbl = tk.Label(self.right_frame, text=self.controller.iu_information.EXAM_SERVICE)
+        self.exam_service_lbl = tk.Label(self.right_frame, text=self.iu_information.EXAM_SERVICE)
         self.exam_service_lable.grid(row=11, column=0, sticky="w")
         self.exam_service_lbl.grid(row=11, column=1, sticky="e")
 
         self.study_coach_label = tk.Label(self.right_frame, text="Study Coach:")
-        self.study_coach_lbl = tk.Label(self.right_frame, text=self.controller.iu_information.STUDY_COACH)
+        self.study_coach_lbl = tk.Label(self.right_frame, text=self.iu_information.STUDY_COACH)
         self.study_coach_label.grid(row=12, column=0, sticky="w")
         self.study_coach_lbl.grid(row=12, column=1, sticky="e")
 
         self.career_service_label = tk.Label(self.right_frame, text="Career Service:")
 
-        self.career_service_lbl = tk.Label(self.right_frame, text=self.controller.iu_information.CAREER_SERVICE)
+        self.career_service_lbl = tk.Label(self.right_frame, text=self.iu_information.CAREER_SERVICE)
         self.career_service_label.grid(row=13, column=0, sticky="w")
         self.career_service_lbl.grid(row=13, column=1, sticky="e")
 
@@ -180,17 +187,17 @@ class DashboardView:
         self.student_title.grid(row=14, column=1, sticky="e", pady=15)
 
         self.last_name_label = tk.Label(self.right_frame, text="Nachname:")
-        self.last_name_lbl = tk.Label(self.right_frame, text=self.controller.student.last_name)
+        self.last_name_lbl = tk.Label(self.right_frame, text=self.student.get_last_name())
         self.last_name_label.grid(row=15, column=0, sticky="w")
         self.last_name_lbl.grid(row=15, column=1, sticky="e")
 
         self.first_name_label = tk.Label(self.right_frame, text="Vorname:")
-        self.first_name_lbl = tk.Label(self.right_frame, text=self.controller.student.first_name)
+        self.first_name_lbl = tk.Label(self.right_frame, text=self.student.get_first_name())
         self.first_name_label.grid(row=16, column=0, sticky="w")
         self.first_name_lbl.grid(row=16, column=1, sticky="e")
 
         self.student_number_label = tk.Label(self.right_frame, text="Martrikelnummer:")
-        self.student_number_lbl = tk.Label(self.right_frame, text=self.controller.student.number)
+        self.student_number_lbl = tk.Label(self.right_frame, text=self.student.get_number())
         self.student_number_label.grid(row=17, column=0, sticky="w")
         self.student_number_lbl.grid(row=17, column=1, sticky="e")
 
@@ -198,14 +205,14 @@ class DashboardView:
         self.refresh_button.grid(row=18, column=1, sticky="e", pady=15)
 
     def on_closing(self):
-        self.controller.cleanup()
+        self.db.close()
         self.root.destroy()
 
     def create_module_elements(self):
         for modul in self.modules.values():
             if isinstance(modul, Modul):
-                self.controller.load_modul(modul)
-                modul_element = ModulElement(self.scrollable_frame, self.controller.student, modul, self)
+                self.db.load_modul(modul, self.student)
+                modul_element = ModulElement(self.scrollable_frame, self.student, modul, self)
                 modul_element.frame.pack(pady=10)
             else:
                 print(f"Unerwarteter Typ in module_list: {type(modul)}")
@@ -215,60 +222,91 @@ class DashboardView:
         event_date_str = self.event_date_entry.get()
         try:
             event_date = datetime.strptime(event_date_str, "%d.%m.%Y %H:%M")
-            self.controller.create_event(event_title, event_date)
-            self.create_event_elements()  # Aktualisieren der GUI-Elemente
+            self.student.create_event(event_title, event_date)
+            print(f"Neues Event erstellt: {event_title}")
+            self.create_event_elements()
             self.event_entry.delete(0, tk.END)
             self.event_date_entry.delete(0, tk.END)
+            self.root.update_idletasks()
         except ValueError as e:
             print(f"Fehler beim Erstellen des Events: {e}")
 
     def create_event_elements(self):
+        print("create_event_elements aufgerufen")
         for view in self.scrollable_frame_c.winfo_children():
-            view.destroy()
+            view.destroy()  # Alte Events entfernen
+
+        # Debug-Ausgabe für die aktuelle Event-Liste
+        print(f"Event-Liste: {self.student.event_list}")
+
         try:
-            events = self.controller.get_events()
-            if events is not None:
-                for event in events:
-                    EventElement(self.scrollable_frame_c, event,
-                                 lambda event_id=event.event_id: self.controller.remove_event(event_id))
+            events = self.student.event_list
+            print(f"Anzahl der geladenen Events: {len(events)}")
+
+            if events:
+                for idx, event in enumerate(events):
+                    print(f"Verarbeite Event {idx + 1}: {event.event_title}")
+                    EventElement(
+                        self.scrollable_frame_c, event,
+                        lambda event_id=event.event_id: self.remove_event_and_refresh(event_id)
+                    )
+
+            self.scrollable_frame_c.update_idletasks()
+            self.canvas_c.configure(scrollregion=self.canvas_c.bbox("all"))
+
         except Exception as e:
-            print(f"Fehler beim Laden der Termine: {e}")
+            print(f"Fehler beim Laden der Events: {e}")
+
+    def remove_event_and_refresh(self, event_id, *args):
+        # Event aus der Datenbank löschen
+        self.student.remove_event(event_id)
+        print(f"Event gelöscht: {event_id}")
+
+        self.student.event_list = [event for event in self.student.event_list if event.event_id != event_id]
+
+        print(f"Event-Liste nach dem Entfernen aus der Liste: {self.student.event_list}")
+
+        # GUI-Elemente neu erstellen
+        self.create_event_elements()
+        self.root.update_idletasks()
 
     def graduate_label_color(self):
-        self.controller.student.calc_is_expected_before_graduation()
-        if self.controller.student.is_expected_before_graduation:
+        self.student.calc_is_expected_before_graduation()
+        if self.student.is_expected_before_graduation:
             self.expected_end_lbl.config(fg="green")
         else:
             self.expected_end_lbl.config(fg="red")
 
     def refresh_button_action(self):
-        self.controller.set_planned_avg_grade(float(self.planned_grade_entry.get()))
-        self.controller.calc_avg_grade()
+        self.student.set_planned_avg_grade(float(self.planned_grade_entry.get()))
+        self.student.calc_avg_grade()
         self.update_avg_grade_label()
-        self.controller.save_avg_grade(self.controller.student)
+        self.db.save_avg_grade(self.student)
         self.grade_label_color()
 
     def grade_label_color(self):
-        self.controller.calc_avg_is_better_than_planned()
-        if self.controller.get_avg_is_better_than_planned() is True:
+        self.student.avg_grade.calc_avg_is_better_than_planned(self.student.get_planned_avg_grade())
+        if self.student.avg_grade.get_actual_avg_is_better_than_planned() is True:
             self.actual_grade_lbl.config(fg="green")
-        elif self.controller.get_avg_is_better_than_planned() is False:
+        elif self.student.avg_grade.get_actual_avg_is_better_than_planned() is False:
             self.actual_grade_lbl.config(fg="red")
         else:
             self.actual_grade_lbl.config(fg="black")
 
     def update_avg_grade_label(self):
-        actual_avg_grade = self.controller.student.avg_grade.actual_avg_grade
+        actual_avg_grade = self.student.avg_grade.actual_avg_grade
         formatted_avg_grade = f"{actual_avg_grade:.1f}" if actual_avg_grade is not None else "Unbekannt"
         self.actual_grade_lbl.config(text=formatted_avg_grade)
         self.grade_label_color()
 
     def update_expected_graduation_date(self):
-        if self.controller.student.expected_graduation_date is not None:
-            self.expected_end_lbl.config(text=self.controller.student.expected_graduation_date.strftime("%d.%m.%Y"))
+        if self.student.get_expected_graduation_date() is not None:
+            self.expected_end_lbl.config(text=self.student.get_expected_graduation_date().strftime("%d.%m.%Y"))
 
     def run(self):
-        self.create_event_elements()
+        print("Events direkt nach dem Start laden:")
+        self.student.event_list = self.db.get_events(self.student)  # Füge hier die Ausgabe hinzu
+        print(f"Anzahl der Events nach manuellem Abruf: {len(self.student.event_list)}")
         self.update_avg_grade_label()
         self.root.mainloop()
 
