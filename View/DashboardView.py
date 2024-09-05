@@ -258,7 +258,6 @@ class DashboardView:
             print(f"Fehler beim Laden der Events: {e}")
 
     def remove_event_and_refresh(self, event_id, *args):
-        # Event aus der Datenbank löschen
         self.student.remove_event(event_id)
         print(f"Event gelöscht: {event_id}")
 
