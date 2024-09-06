@@ -6,6 +6,7 @@ import os
 
 
 def get_fill_status(status):
+    # Gibt die Farbe basierend auf dem Modulstatus zurück
     if status == "Offen":
         return "gray"
     elif status == "In Bearbeitung":
@@ -23,53 +24,58 @@ class ModulElement:
         self.student_modul = student_modul
         self.dashboard_view = dashboard_view
 
-        # Hauptframe
+        # Hauptframe für das Modul-Element
         self.frame = tk.Frame(parent, width=450, height=220, bg="#5F6E78", padx=10, pady=10)
         self.frame.pack_propagate(False)
         self.frame.pack(pady=10)
 
-        # Linker Frame
+        # Linker Frame für das Bild und Akronym
         self.left_frame = tk.Frame(self.frame, width=150, height=200, bg="#5F6E78")
         self.left_frame.pack_propagate(False)
         self.left_frame.pack(side="left", fill="both", expand=True, padx=(0, 5))
 
-        # Bild laden
+        # Bild des Moduls laden
         self.image_path = self.student_modul.image_path
+
         if not os.path.exists(self.image_path):
             self.image = None
+
         else:
             try:
                 self.image = tk.PhotoImage(file=self.image_path)
+
             except Exception as e:
                 self.image = None
                 print(f"Fehler beim laden des Bildes: {e}")
 
-        # Akronym und Bild
+        # Anzeige des Akronyms
         self.acronym_label = tk.Label(self.left_frame, text=self.student_modul.acronym, bg="#5F6E78", fg="white")
         self.acronym_label.pack()
 
+        # Bildanzeige im linken Frame
         self.modul_image = tk.Label(self.left_frame, image=self.image, bg="#5F6E78")
         self.modul_image.image = self.image
         self.modul_image.pack()
 
-        # Rechter Frame - Modulinformationen
+        # Rechter Frame für Modulinformationen
         self.right_frame = tk.Frame(self.frame, bg="#5F6E78")
         self.right_frame.pack_propagate(False)
         self.right_frame.pack(side="right", fill="both", expand=True, padx=(5, 0))
         self.right_frame.grid_rowconfigure(0, weight=1)
         self.right_frame.columnconfigure(1, weight=1, minsize=120)
 
-        # Titel-Zeile
+        # Titelanzeige
         self.title_label = tk.Label(self.right_frame, text=self.student_modul.title, bg="#5F6E78", fg="white")
         self.title_label.grid(row=0, column=0, columnspan=2, sticky="w")
 
-        # Status-Zeile
+        # Status-Zeile mit farbiger Statusanzeige
         self.status_oval = tk.Canvas(self.right_frame, width=25, height=25, bg="#5F6E78", highlightthickness=0)
         self.status_oval.grid(row=1, column=0, sticky="w")
         self.fill_status = get_fill_status(self.student_modul.status)
         self.status_oval.create_oval(5, 5, 20, 20, fill=self.fill_status)
         self.status_oval.grid(row=1, column=0, sticky="w")
 
+        # Dropdown für den Modulstatus
         self.status_var = tk.StringVar()
         self.status_var.set(self.student_modul.status)
         self.status_dropdown = ttk.Combobox(self.right_frame, textvariable=self.status_var)
@@ -89,7 +95,6 @@ class ModulElement:
         # Startdatum-Zeile
         self.start_date_label = tk.Label(self.right_frame, text="Startdatum:", bg="#5F6E78", fg="white")
         self.start_date_label.grid(row=3, column=0, sticky="w")
-
         self.start_date_dy_label = tk.Label(self.right_frame, bg="#5F6E78", fg="white")
         if student_modul.start_date:
             self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%d.%m.%Y"))
@@ -100,7 +105,6 @@ class ModulElement:
         # Enddatum-Zeile
         self.end_date_label = tk.Label(self.right_frame, text="Enddatum:", bg="#5F6E78", fg="white")
         self.end_date_label.grid(row=4, column=0, sticky="w")
-
         self.end_date_dy_label = tk.Label(self.right_frame, bg="#5F6E78", fg="white")
         if student_modul.end_Date is not None:
             self.end_date_dy_label.config(text=self.student_modul.end_Date.strftime("%d.%m.%Y"))
@@ -111,7 +115,6 @@ class ModulElement:
         # Deadline-Zeile
         self.deadline_label = tk.Label(self.right_frame, text="Deadline:", bg="#5F6E78", fg="white")
         self.deadline_label.grid(row=5, column=0, sticky="w")
-
         self.deadline_dy_label = tk.Label(self.right_frame)
         if student_modul.deadline:
             self.deadline_dy_label.config(text=self.student_modul.deadline.strftime("%d.%m.%Y"), bg="#5F6E78",
@@ -123,7 +126,6 @@ class ModulElement:
         # Prüfungsdatum-Zeile
         self.exam_date_label = tk.Label(self.right_frame, text="Prüfungstermin:", bg="#5F6E78", fg="white")
         self.exam_date_label.grid(row=6, column=0, sticky="w")
-
         self.exam_date_entry = tk.Entry(self.right_frame)
         if self.student_modul.exam_date:
             try:
@@ -141,7 +143,6 @@ class ModulElement:
         # Noten-Zeile
         self.grade_label = tk.Label(self.right_frame, text="Note:", bg="#5F6E78", fg="white")
         self.grade_label.grid(row=7, column=0, sticky="w")
-
         self.grade_entry = tk.Entry(self.right_frame)
         if self.student_modul.grade is not None:
             self.grade_entry.insert(0, str(self.student_modul.grade))
@@ -149,6 +150,7 @@ class ModulElement:
         self.grade_entry.grid(row=7, column=1, sticky="w")
 
     def update_modul(self, event):
+        # Aktualisiert den Modulstatus und speichert die Änderungen
         new_status = self.status_var.get()
         self.student_modul.set_status(new_status)
         self.student_modul.set_start_date()
@@ -162,23 +164,30 @@ class ModulElement:
         if new_status == "In Bearbeitung":
             self.student_modul.set_status("In Bearbeitung")
             self.update_status_fill_status()
+
             if self.student_modul.start_date:
                 self.start_date_dy_label.config(text=self.student_modul.start_date.strftime("%d.%m.%Y"))
+
             else:
                 self.start_date_dy_label.config(text="Ausstehend")
+
             if self.student_modul.deadline:
                 self.deadline_dy_label.config(text=self.student_modul.deadline.strftime("%d.%m.%Y"))
+
             else:
                 self.deadline_dy_label.config(text="Unbekannt")
+
             if self.student_modul.end_Date:
                 self.end_date_dy_label.config(text=self.student_modul.end_Date.strftime("%d.%m.%Y"))
 
         if self.student_modul.end_Date:
             self.end_date_dy_label.config(text=self.student_modul.end_Date.strftime("%d.%m.%Y"))
+
         else:
             self.end_date_dy_label.config(text="Ausstehend")
 
         exam_grade = self.grade_entry.get()
+
         if exam_grade != "":
             self.student_modul.set_grade(float(exam_grade))
 
@@ -190,21 +199,28 @@ class ModulElement:
             self.dashboard_view.update_expected_graduation_date()
 
     def update_exam_date(self, event):
+        # Aktualisiert das Prüfungsdatum
         exam_date_str = self.exam_date_entry.get()
+
         try:
             if exam_date_str:
                 exam_date_obj = datetime.strptime(exam_date_str, "%d.%m.%Y %H:%M")
+
                 if self.student_modul.exam_date is None or exam_date_obj != self.student_modul.exam_date:
                     self.student_modul.set_exam_date_create_event(self.student, exam_date_obj)
                     self.db.save_modul(self.student_modul, self.student)
                     self.exam_date_entry.delete(0, tk.END)
                     self.exam_date_entry.insert(0, exam_date_obj.strftime("%d.%m.%Y %H:%M"))
+
             self.dashboard_view.create_event_elements()
+
         except ValueError as e:
             print(f"Fehler bei der Umwandlung exam_date: {e}")
 
     def update_grade_and_avg_grade(self, event):
+        # Aktualisiert die Note und berechnet den neuen Notendurchschnitt
         exam_grade_str = self.grade_entry.get()
+
         try:
             if exam_grade_str:
                 exam_grade_float = float(exam_grade_str)
@@ -212,10 +228,12 @@ class ModulElement:
                 self.student.calc_avg_grade()
                 self.dashboard_view.update_avg_grade_label()
                 self.db.save_modul(self.student_modul, self.student)
+
         except ValueError:
             print(f"Ungültiger Notenwert: {exam_grade_str}")
 
     def update_status_fill_status(self):
+        # Aktualisiert die Farbe des Statusindikators
         self.fill_status = get_fill_status(self.student_modul.status)
         self.status_oval.create_oval(5, 5, 20, 20, fill=self.fill_status)
         self.status_oval.grid(row=1, column=0, sticky="w")

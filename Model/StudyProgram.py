@@ -10,6 +10,7 @@ class StudyProgram:
         self.initialize_modul_list()
 
     def initialize_modul_list(self):
+        # Initialisiert die Modul-Liste mit den Modulen des Studiengangs
         self.modul_list = {
             1: Modul(1, "DLBDSIDS01_D", "Einführung in Data Science", "Fachpräsentation",
                      "Image/Data_Science.png"),

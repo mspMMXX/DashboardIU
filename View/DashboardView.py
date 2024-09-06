@@ -13,6 +13,7 @@ import tkinter as tk
 class DashboardView:
 
     def __init__(self):
+        # Initialisiert das Dashboard-Fenster und die benötigten Objekte
         self.student = Student()
         self.db = DataBase()
         self.study_program = StudyProgram()
@@ -23,7 +24,7 @@ class DashboardView:
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        # Frames (links, mitte, rechts)
+        # Layout für drei Hauptbereiche: Links, Mitte, Rechts
         self.left_frame = tk.Frame(self.root, width=496.6)
         self.left_frame.pack(side="left", fill="y")
         self.center_frame = tk.Frame(self.root, width=496.6)
@@ -31,7 +32,7 @@ class DashboardView:
         self.right_frame = tk.Frame(self.root, width=496.6)
         self.right_frame.pack(side="left", fill="y")
 
-        # Left-Frame Scrollbar Module
+        # Scrollbarer Bereich im linken Frame für Module
         self.canvas = tk.Canvas(self.left_frame, width=496.6)
         scrollbar = tk.Scrollbar(self.left_frame, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas, width=496.6)
@@ -45,15 +46,15 @@ class DashboardView:
 
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=scrollbar.set)
-
         self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
+        # Initialisiert die Modul-Liste des Studenten und erstellt Modul-Elemente
         self.modules = self.student.get_student_modul_list()
         self.module_index = 0
         self.create_module_elements()
 
-        # Center-Frame
+        # Mittelteil_ Form zum Hinzufügen neuer Events
         self.event_title_label = tk.Label(self.center_frame, text="Terminname:")
         self.event_entry = tk.Entry(self.center_frame)
         self.event_title_label.grid(row=0, column=0)
@@ -66,6 +67,8 @@ class DashboardView:
 
         self.add_event_button = tk.Button(self.center_frame, text="Neu", command=self.create_new_event)
         self.add_event_button.grid(row=0, column=4)
+
+        # Scrollbarer Bereich für Event-Elemente
         self.canvas_c = tk.Canvas(self.center_frame, width=496.6)
         self.scrollbar_c = tk.Scrollbar(self.center_frame, orient="vertical", command=self.canvas_c.yview)
         self.scrollable_frame_c = tk.Frame(self.canvas_c, width=496.6)
@@ -86,13 +89,14 @@ class DashboardView:
         self.center_frame.grid_rowconfigure(1, weight=1)
         self.center_frame.grid_columnconfigure(1, weight=1)
 
+        # Initilaisiert die Event-Liste
         self.schedule_index = 0
         self.create_event_elements()
 
-        # Right-Frame: Übersicht
-        # Notendurchschnitt
+        # Rechter Bereich: Anzeige für Noten und Studiendetails
         self.title_font = font.Font(size=14, weight="bold")
 
+        # Lädt den Notendurchschnitt und zeigt ihn an
         self.db.load_avg_grade(self.student)
         self.avg_grade_title = tk.Label(self.right_frame, text="Notendurchschnitt", pady=15, font=self.title_font)
         self.avg_grade_title.grid(row=0, column=1, sticky="e")
@@ -111,10 +115,11 @@ class DashboardView:
         self.actual_grade_label.grid(row=2, column=0, sticky="w")
         self.actual_grade_lbl.grid(row=2, column=1, sticky="e")
 
+        # Aktualisiert die Farbe und Werte der Notenazeige
         self.update_avg_grade_label()
         self.grade_label_color()
 
-        # Studium
+        # Studieninformationen anzeigen
         self.study_label = tk.Label(self.right_frame, text="Studium", pady=15, font=self.title_font)
         self.study_label.grid(row=3, column=1, sticky="e")
 
@@ -154,7 +159,7 @@ class DashboardView:
 
         self.graduate_label_color()
 
-        # IU-Kontaktdaten
+        # Anzeige für IU-Kontaktdaten
         self.contact_title = tk.Label(self.right_frame, text="IU Kontaktdaten", font=self.title_font)
         self.contact_title.grid(row=9, column=1, sticky="e", pady=15)
 
@@ -179,7 +184,7 @@ class DashboardView:
         self.career_service_label.grid(row=13, column=0, sticky="w")
         self.career_service_lbl.grid(row=13, column=1, sticky="e")
 
-        # Student
+        # Studentendaten anzeigen
         self.student_title = tk.Label(self.right_frame, text="Student", font=self.title_font)
         self.student_title.grid(row=14, column=1, sticky="e", pady=15)
 
@@ -198,68 +203,79 @@ class DashboardView:
         self.student_number_label.grid(row=17, column=0, sticky="w")
         self.student_number_lbl.grid(row=17, column=1, sticky="e")
 
+        # Aktualisierungsbutton
         self.refresh_button = tk.Button(self.right_frame, text="Aktualisieren", command=self.refresh_button_action)
         self.refresh_button.grid(row=18, column=1, sticky="e", pady=15)
 
     def create_module_elements(self):
+        # Erstellt die UI-Elemente für die Module
         for modul in self.modules.values():
+
             if isinstance(modul, Modul):
                 self.db.load_modul(modul, self.student)
                 modul_element = ModulElement(self.scrollable_frame, self.student, modul, self)
                 modul_element.frame.pack(pady=10)
+
             else:
                 print(f"Unerwarteter Typ in module_list: {type(modul)}")
 
     def create_new_event(self):
+        # Erstellt ein neues Event und aktualisiert die UI
         event_title = self.event_entry.get()
         event_date_str = self.event_date_entry.get()
+
         try:
             event_date = datetime.strptime(event_date_str, "%d.%m.%Y %H:%M")
             self.student.create_event(event_title, event_date)
-            print(f"Neues Event erstellt: {event_title}")
             self.create_event_elements()
             self.event_entry.delete(0, tk.END)
             self.event_date_entry.delete(0, tk.END)
             self.root.update_idletasks()
+
         except ValueError as e:
             print(f"Fehler beim Erstellen des Events: {e}")
 
     def create_event_elements(self):
+        # Erstellt die UI-Elemente für die Events
         for view in self.scrollable_frame_c.winfo_children():
             view.destroy()
+
         try:
             events = self.student.event_list
+
             if events:
+
                 for event in events:
                     EventElement(
                         self.scrollable_frame_c, event,
                         lambda event_id=event.event_id: self.remove_event_and_refresh(event_id)
                     )
+
             self.scrollable_frame_c.update_idletasks()
             self.canvas_c.configure(scrollregion=self.canvas_c.bbox("all"))
+
         except Exception as e:
             print(f"Fehler beim Laden der Events: {e}")
 
     def remove_event_and_refresh(self, event_id, *args):
+        # Entfernt ein Event und aktualisiert die Eventliste
         self.student.remove_event(event_id)
-        print(f"Event gelöscht: {event_id}")
-
         self.student.event_list = [event for event in self.student.event_list if event.event_id != event_id]
-
-        print(f"Event-Liste nach dem Entfernen aus der Liste: {self.student.event_list}")
-
-        # GUI-Elemente neu erstellen
         self.create_event_elements()
         self.root.update_idletasks()
 
     def graduate_label_color(self):
+        # Setzt die Farbe des Abschlusslabels je nach Status
         self.student.calc_is_expected_before_graduation()
+
         if self.student.is_expected_before_graduation:
             self.expected_end_lbl.config(fg="green")
+
         else:
             self.expected_end_lbl.config(fg="red")
 
     def refresh_button_action(self):
+        # Aktualisiert den Notendurchschnitt und speichert ihn
         self.student.set_planned_avg_grade(float(self.planned_grade_entry.get()))
         self.student.calc_avg_grade()
         self.update_avg_grade_label()
@@ -267,32 +283,38 @@ class DashboardView:
         self.grade_label_color()
 
     def grade_label_color(self):
+        # Setzt die Farbe der Notenanzeige je nach Durchschnitt
         self.student.avg_grade.calc_avg_is_better_than_planned(self.student.get_planned_avg_grade())
+
         if self.student.avg_grade.get_actual_avg_is_better_than_planned() is True:
             self.actual_grade_lbl.config(fg="green")
+
         elif self.student.avg_grade.get_actual_avg_is_better_than_planned() is False:
             self.actual_grade_lbl.config(fg="red")
+
         else:
             self.actual_grade_lbl.config(fg="black")
 
     def update_avg_grade_label(self):
+        # Aktualisiert die Anzeige des aktuellen Notendurchschnitts
         actual_avg_grade = self.student.avg_grade.get_actual_avg_grade()
         formatted_avg_grade = f"{actual_avg_grade:.1f}" if actual_avg_grade is not None else "Unbekannt"
         self.actual_grade_lbl.config(text=formatted_avg_grade)
         self.grade_label_color()
 
     def update_expected_graduation_date(self):
+        # Aktualisiert das voraussichtliche Abschlussdatum
         if self.student.get_expected_graduation_date() is not None:
             self.expected_end_lbl.config(text=self.student.get_expected_graduation_date().strftime("%d.%m.%Y"))
 
     def run(self):
-        print("Events direkt nach dem Start laden:")
-        self.student.event_list = self.db.get_events(self.student)  # Füge hier die Ausgabe hinzu
-        print(f"Anzahl der Events nach manuellem Abruf: {len(self.student.event_list)}")
+        # Startet das Dashboard und aktualisiert die Daten
+        self.student.event_list = self.db.get_events(self.student)
         self.update_avg_grade_label()
         self.root.mainloop()
 
     def on_closing(self):
+        # Schließt die Datenbankverbindung und beendet das Programm
         self.db.close()
         self.root.destroy()
 
