@@ -1,5 +1,3 @@
-import time
-
 from ViewElement.ModulElement import ModulElement
 from ViewElement.EventElement import EventElement
 from Model.Student import Student
@@ -8,7 +6,6 @@ from Model.IuInformation import IUInformation
 from Data.DataBase import DataBase
 from datetime import datetime
 from Model.Modul import Modul
-from functools import partial
 from tkinter import font
 import tkinter as tk
 
@@ -204,10 +201,6 @@ class DashboardView:
         self.refresh_button = tk.Button(self.right_frame, text="Aktualisieren", command=self.refresh_button_action)
         self.refresh_button.grid(row=18, column=1, sticky="e", pady=15)
 
-    def on_closing(self):
-        self.db.close()
-        self.root.destroy()
-
     def create_module_elements(self):
         for modul in self.modules.values():
             if isinstance(modul, Modul):
@@ -232,28 +225,18 @@ class DashboardView:
             print(f"Fehler beim Erstellen des Events: {e}")
 
     def create_event_elements(self):
-        print("create_event_elements aufgerufen")
         for view in self.scrollable_frame_c.winfo_children():
-            view.destroy()  # Alte Events entfernen
-
-        # Debug-Ausgabe für die aktuelle Event-Liste
-        print(f"Event-Liste: {self.student.event_list}")
-
+            view.destroy()
         try:
             events = self.student.event_list
-            print(f"Anzahl der geladenen Events: {len(events)}")
-
             if events:
-                for idx, event in enumerate(events):
-                    print(f"Verarbeite Event {idx + 1}: {event.event_title}")
+                for event in events:
                     EventElement(
                         self.scrollable_frame_c, event,
                         lambda event_id=event.event_id: self.remove_event_and_refresh(event_id)
                     )
-
             self.scrollable_frame_c.update_idletasks()
             self.canvas_c.configure(scrollregion=self.canvas_c.bbox("all"))
-
         except Exception as e:
             print(f"Fehler beim Laden der Events: {e}")
 
@@ -293,7 +276,7 @@ class DashboardView:
             self.actual_grade_lbl.config(fg="black")
 
     def update_avg_grade_label(self):
-        actual_avg_grade = self.student.avg_grade.actual_avg_grade
+        actual_avg_grade = self.student.avg_grade.get_actual_avg_grade()
         formatted_avg_grade = f"{actual_avg_grade:.1f}" if actual_avg_grade is not None else "Unbekannt"
         self.actual_grade_lbl.config(text=formatted_avg_grade)
         self.grade_label_color()
@@ -308,6 +291,10 @@ class DashboardView:
         print(f"Anzahl der Events nach manuellem Abruf: {len(self.student.event_list)}")
         self.update_avg_grade_label()
         self.root.mainloop()
+
+    def on_closing(self):
+        self.db.close()
+        self.root.destroy()
 
 
 if __name__ == "__main__":

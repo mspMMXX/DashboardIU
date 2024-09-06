@@ -34,23 +34,9 @@ class DataBase:
         self.cursor.close()
         self.connection.close()
 
-    def load_avg_grade(self, student):
-        query = "SELECT * FROM AvgGrade WHERE student_id = %s"
-        param = (student.student_id,)
-        result = self.fetch_one(query, param)
-
-        if result:
-            student.planned_avg_grade = result["planned_avg_grade"]
-            student.avg_grade.actual_avg_grade = result["actual_avg_grade"]
-            student.avg_grade.actual_avg_grade_is_better_than_planned = (
-                result)["actual_avg_grade_is_better_than_planned"]
-            print(f"Geplanter Notendurchschnitt geladen: {student.planned_avg_grade}")
-        else:
-            print("Kein geplanter Notendurchschnitt in der Datenbank gefunden.")
-
     def save_modul(self, modul, student):
         query = "SELECT id FROM Modul WHERE modul_id = %s AND student_id = %s"
-        param = (modul.modul_id, student.student_id)
+        param = (modul.get_modul_id(), student.student_id)
         result = self.fetch_one(query, param)
 
         if result:
@@ -59,9 +45,9 @@ class DataBase:
             SET acronym = %s, title = %s, exam_format = %s, image_path = %s, status = %s, 
             start_date = %s, end_date = %s, deadline = %s, exam_date = %s, grade = %s, student_id = %s
             WHERE id = %s"""
-            param = (modul.acronym, modul.title, modul.exam_format, modul.image_path, modul.status, modul.start_date,
-                     modul.end_Date, modul.deadline, modul.exam_date, modul.grade, student.student_id,
-                     modul_id)
+            param = (modul.get_acronym(), modul.get_title(), modul.get_exam_format(), modul.image_path,
+                     modul.get_status(), modul.get_start_date(), modul.get_end_date(), modul.get_deadline(),
+                     modul.get_exam_date(), modul.get_grade(), student.student_id, modul_id)
 
             try:
                 self.execute_query(query, param)
@@ -71,9 +57,9 @@ class DataBase:
             query = """INSERT INTO Modul (modul_id, acronym, title, exam_format, image_path, status, start_date, 
             end_date, deadline, exam_date, grade, student_id)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-            param = (modul.modul_id, modul.acronym, modul.title, modul.exam_format, modul.image_path, modul.status,
-                     modul.start_date, modul.end_Date, modul.deadline, modul.exam_date, modul.grade,
-                     student.student_id)
+            param = (modul.get_modul_id(), modul.get_acronym(), modul.get_title(), modul.get_exam_format(),
+                     modul.image_path, modul.get_status(), modul.get_start_date(), modul.get_end_date(),
+                     modul.get_deadline(), modul.get_exam_date(), modul.get_grade(), student.student_id)
 
             try:
                 self.execute_query(query, param)
@@ -83,33 +69,22 @@ class DataBase:
     def load_modul(self, modul, student):
         print("Laden der Module")
         query = "SELECT * FROM Modul WHERE modul_id = %s AND student_id = %s"
-        param = (modul.modul_id, student.student_id)
+        param = (modul.get_modul_id(), student.student_id)
         result = self.fetch_one(query, param)
 
         if result:
-            modul.acronym = result["acronym"]
-            modul.title = result["title"]
-            modul.exam_format = result["exam_format"]
+            modul.set_acronym(result["acronym"])
+            modul.set_title(result["title"])
+            modul.set_exam_format(result["exam_format"])
             modul.image_path = result["image_path"]
-            modul.status = result["status"]
+            modul.set_status(result["status"])
             modul.start_date = result["start_date"]
             modul.end_Date = result["end_date"]
             modul.deadline = result["deadline"]
-            modul.exam_date = result["exam_date"]
-            modul.grade = result["grade"]
-            modul.modul_id = result["modul_id"]
+            modul.set_exam_date(result["exam_date"])
+            modul.set_grade(result["grade"])
+            modul.set_modul_id(result["modul_id"])
             print(f"Modul geladen: {modul}")
-
-    def get_events(self, student):
-        print(f"Student-ID beim Abrufen der Events: {student.student_id}")
-        events = self.load_events(student)
-        if events:
-            student.event_list = events
-            print(f"Event-Liste nach dem Laden: {student.event_list}")
-        else:
-            student.event_list = []
-        print(f"Anzahl der Events, die aus der Datenbank geladen wurden (get_events): {len(events)}")
-        return events
 
     def save_event(self, event, student):
         query = "SELECT event_id FROM Events WHERE event_id = %s AND student_id = %s"
@@ -146,12 +121,19 @@ class DataBase:
                 event.event_id = event_id
                 event_list.append(event)
 
-            print(
-                f"Anzahl der Events, die aus der Datenbank geladen wurden (load_events): {len(results)}")
+            print(f"Anzahl der Events, die aus der Datenbank geladen wurden (load_events): {len(results)}")
             return event_list
         else:
-            print("Keine Events in der Datenbank gefunden")  # Debug-Ausgabe
+            print("Keine Events in der Datenbank gefunden")
             return []
+
+    def get_events(self, student):
+        events = self.load_events(student)
+        if events:
+            student.event_list = events
+        else:
+            student.event_list = []
+        return events
 
     def delete_event(self, event_id, student):
         query = "SELECT id FROM Events WHERE event_id = %s AND student_id = %s"
@@ -188,6 +170,20 @@ class DataBase:
                      student.avg_grade.actual_avg_grade_is_better_than_planned)
             self.execute_query(query, param)
 
+    def load_avg_grade(self, student):
+        query = "SELECT * FROM AvgGrade WHERE student_id = %s"
+        param = (student.student_id,)
+        result = self.fetch_one(query, param)
+
+        if result:
+            student.planned_avg_grade = result["planned_avg_grade"]
+            student.avg_grade.set_actual_avg_grade(result["actual_avg_grade"])
+            student.avg_grade.set_actual_avg_grade_is_better_than_planned(
+                result["actual_avg_grade_is_better_than_planned"])
+            print(f"Geplanter Notendurchschnitt geladen: {student.planned_avg_grade}")
+        else:
+            print("Kein geplanter Notendurchschnitt in der Datenbank gefunden.")
+
     def save_student(self, student):
         query = "SELECT student_id FROM Student WHERE number = %s"
         params = (student.number,)
@@ -201,8 +197,8 @@ class DataBase:
             is_expected_before_graduation = %s
             WHERE student_id = %s
             """
-            params = (student.planned_avg_grade, student.graduation_date, student.expected_graduation_date,
-                      student.is_expected_before_graduation, student.student_id)
+            params = (student.planned_avg_grade, student.graduation_date, student.get_expected_graduation_date(),
+                      student.get_is_expected_before_graduation(), student.student_id)
             self.execute_query(query, params)
         else:
             query = """
@@ -212,6 +208,6 @@ class DataBase:
             """
             params = (student.student_id, student.last_name, student.first_name, student.number,
                       student.study_start_date, student.planned_avg_grade, student.graduation_date,
-                      student.expected_graduation_date, student.is_expected_before_graduation)
+                      student.get_expected_graduation_date(), student.get_is_expected_before_graduation())
             self.execute_query(query, params)
             student.student_id = self.cursor.lastrowid

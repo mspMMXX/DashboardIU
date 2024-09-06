@@ -4,18 +4,27 @@ class AvgGrade:
         self.actual_avg_grade = None
         self.actual_avg_grade_is_better_than_planned = None
 
+    def get_actual_avg_grade(self):
+        return self.actual_avg_grade
+
+    def set_actual_avg_grade(self, grade):
+        self.actual_avg_grade = grade
+
     def get_actual_avg_is_better_than_planned(self):
         if self.actual_avg_grade_is_better_than_planned is None:
             return False
         else:
             return self.actual_avg_grade_is_better_than_planned
 
+    def set_actual_avg_grade_is_better_than_planned(self, is_better):
+        self.actual_avg_grade_is_better_than_planned = is_better
+
     def calc_avg_grade(self, student_moduls):
         sum_grade = 0.0
         sum_completed_moduls = 0.0
         for modul in student_moduls.values():
-            if modul.grade is not None:
-                sum_grade += float(modul.grade)
+            if modul.get_grade() is not None:
+                sum_grade += float(modul.get_grade())
                 sum_completed_moduls += 1
         self.actual_avg_grade = sum_grade / sum_completed_moduls if sum_completed_moduls > 0 else None
 

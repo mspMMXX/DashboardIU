@@ -21,15 +21,10 @@ class Student:
         self.avg_grade = AvgGrade()
         self.modul_list = {}
         self.db = DataBase()
-        print("Lade Events für den Studenten")
         self.event_list = self.db.get_events(self)
-        print(f"Anzahl der Events nach Abruf: {len(self.event_list)}")
         self.db.save_student(self)
         self.initialize_moduls()
         self.calc_graduation_date()
-
-    def get_number(self):
-        return self.number
 
     def get_first_name(self):
         return self.first_name
@@ -37,17 +32,27 @@ class Student:
     def get_last_name(self):
         return self.last_name
 
-    def get_expected_graduation_date(self):
-        return self.expected_graduation_date
-
-    def get_graduation_date(self):
-        return self.graduation_date
+    def get_number(self):
+        return self.number
 
     def get_study_start_date_str(self):
         return self.study_start_date.strftime("%d.%m.%Y")
 
+    def get_graduation_date(self):
+        return self.graduation_date
+
+    def get_expected_graduation_date(self):
+        return self.expected_graduation_date
+
+    def get_is_expected_before_graduation(self):
+        return self.is_expected_before_graduation
+
     def get_planned_avg_grade(self):
         return self.planned_avg_grade
+
+    def set_planned_avg_grade(self, planned_grade):
+        self.planned_avg_grade = planned_grade
+        self.avg_grade.planned_avg_grade = planned_grade
 
     def get_student_modul_list(self):
         return self.modul_list
@@ -90,18 +95,15 @@ class Student:
     def calc_avg_grade(self):
         self.avg_grade.calc_avg_grade(self.modul_list)
 
-    def set_planned_avg_grade(self, planned_grade):
-        self.planned_avg_grade = planned_grade
-        self.avg_grade.planned_avg_grade = planned_grade
-
     def calc_expected_graduation_date(self):
         total_days_needed = sum(
-            (modul.end_Date - modul.start_date).days for modul in self.modul_list.values()
-            if modul.status == "Abgeschlossen" and isinstance(modul.start_date, dt) and isinstance(modul.end_Date, dt)
+            (modul.get_end_date() - modul.get_start_date()).days for modul in self.modul_list.values()
+            if modul.get_status() == "Abgeschlossen" and isinstance(modul.get_start_date(), dt) and
+            isinstance(modul.get_end_date(), dt)
         )
         sum_modul = sum(
             1 for modul in self.modul_list.values()
-            if modul.status == "Abgeschlossen"
+            if modul.get_status() == "Abgeschlossen"
         )
 
         if sum_modul != 0:
