@@ -1,21 +1,27 @@
 import mysql.connector
 from Model.Event import Event
+import datetime as dt
 
 
 class DataBase:
 
     def __init__(self):
-        # Verbindung zum MariaDB-Server
-        self.connection = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="root",
-            database="dashboard",
-            charset="utf8mb4",
-            collation="utf8mb4_general_ci"
-        )
-        # Cursor für Datenbankabfrage
-        self.cursor = self.connection.cursor(dictionary=True)
+        try:
+            # Verbindung zum MariaDB-Server
+            self.connection = mysql.connector.connect(
+                host="127.0.0.1",
+                user="root",
+                password="root",
+                database="dashboard",
+                charset="utf8mb4",
+                collation="utf8mb4_general_ci"
+            )
+            # Cursor für Datenbankabfrage
+            self.cursor = self.connection.cursor(dictionary=True)
+
+        except mysql.connector.Error as err:
+            print(f"Fehler bei der Verbindung zur Datenbank: {err}")
+            self.connection = None
 
     def execute_query(self, query, param=None):
         # Führt eine Abfrage mit optionalen Parametern aus
